@@ -1,0 +1,19 @@
+# Prototype (kept running until you switch to the new app)
+/WallLoop
+/stills/
+
+# Xcode / XcodeGen output
+*.xcodeproj
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+
+# Release artifacts
+dist/
+*.dmg
+
+# Local signing overrides
+Config/Local.xcconfig
+
+.DS_Store
