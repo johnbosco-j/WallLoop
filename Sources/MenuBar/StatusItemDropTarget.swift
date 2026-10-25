@@ -56,9 +56,9 @@ final class StatusItemDropTarget: NSView {
     @available(*, unavailable)
     required init?(coder: NSCoder) { fatalError("init(coder:) is not supported") }
 
-    // The button opens the menu; this view only exists for drags.
-    override func mouseDown(with event: NSEvent) { button?.mouseDown(with: event) }
-    override func rightMouseDown(with event: NSEvent) { button?.rightMouseDown(with: event) }
+    // Invisible to clicks so they reach the button and open the menu as usual.
+    // AppKit finds drag destinations by registered drag types, not hitTest(_:).
+    override func hitTest(_ point: NSPoint) -> NSView? { nil }
 
     override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
         guard !items(in: sender).isEmpty else { return [] }

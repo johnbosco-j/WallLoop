@@ -26,7 +26,12 @@ and open source.
   picture, so the lock screen and login window show the same scene.
 - **Shuffle or in order**, changing every 5, 15 or 30 minutes, every 1 or 3 hours, daily, or never.
   Shuffle plays every video once before repeating.
-- **Menu bar controls:** Previous, Next, Pause and what's playing now.
+- **Menu bar controls:** Previous, Next and Pause, with the current video's thumbnail, its name and,
+  when paused, the reason.
+- **Favorites:** heart the current video, play any favorite from the Favorites submenu, or shuffle
+  favorites only.
+- **Drop to add:** drop videos on the menu bar icon to copy them into Movies › WallLoop and play them
+  right away; drop a folder to add it to your library without copying.
 - **Light on battery:** hardware-decoded playback that never keeps your display awake.
 - **Automatic updates** through Sparkle.
 - **Any folders you choose.** Movies › WallLoop is always included; add more folders and WallLoop
@@ -36,7 +41,6 @@ and open source.
 - **Hardware decoding only.** Videos your Mac can't decode in hardware (for example AV1 on M1/M2, or
   VP9) are listed under "Can't Play" with the reason instead of draining your battery.
 - **HEVC with alpha.** Transparent areas show your desktop picture through the video.
-- *(planned, M4)* Favorites, "shuffle favorites only", and the current video's thumbnail in the menu.
 - **Pauses itself.** Always while the screen is locked, the displays or Mac are asleep, or another
   user is active; and, unless you turn it off, on battery power, in Low Power Mode, and when
   full-screen apps or windows cover every display. The menu shows why it's paused, playback resumes
