@@ -75,6 +75,9 @@ final class MenuBarController: NSObject, NSMenuDelegate {
         menu.addItem(.separator())
 
         menu.addItem(makeItem("Open Library…", #selector(showLibrary), symbol: "film.stack"))
+        let updates = makeItem("Check for Updates…", #selector(checkForUpdates), symbol: "arrow.down.circle")
+        if !Updater.shared.canCheckForUpdates { updates.action = nil }
+        menu.addItem(updates)
         menu.addItem(makeItem("Settings…", #selector(showSettings), key: ",", symbol: "gearshape"))
         menu.addItem(.separator())
         menu.addItem(makeItem("Quit WallLoop", #selector(quit), key: "q"))
@@ -108,5 +111,6 @@ final class MenuBarController: NSObject, NSMenuDelegate {
     @objc private func showVideoFolder() { NSWorkspace.shared.open(model.library.defaultFolder) }
     @objc private func showLibrary() { openSettings(.library) }
     @objc private func showSettings() { openSettings(nil) }
+    @objc private func checkForUpdates() { Updater.shared.checkForUpdates() }
     @objc private func quit() { NSApp.terminate(nil) }
 }

@@ -12,4 +12,13 @@ CODE_SIGN_IDENTITY = -
 CODE_SIGN_STYLE = Manual
 DEVELOPMENT_TEAM =
 
+// Sparkle auto-updates. Fill these in once before your first release (see README,
+// "Releasing"). While APPCAST_URL is still the placeholder, the updater stays off
+// and "Check for Updates…" is disabled, so development builds never hit the network.
+//
+// The double slash in a URL would start an xcconfig comment, so it is written as
+// https:/$()/ — Xcode expands $() to nothing.
+APPCAST_URL = https:/$()/example.com/wallloop/appcast.xml
+SPARKLE_PUBLIC_KEY = REPLACE_WITH_SPARKLE_PUBLIC_ED_KEY
+
 #include? "Local.xcconfig"
