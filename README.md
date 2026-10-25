@@ -29,11 +29,18 @@ and open source.
 - **Menu bar controls:** Previous, Next, Pause and what's playing now.
 - **Light on battery:** hardware-decoded playback that never keeps your display awake.
 - **Automatic updates** through Sparkle.
-- *(planned, M3)* Choose any folders, live updates as you add or remove videos, thumbnails,
-  drag and drop to import, and a check that skips videos your Mac can't decode in hardware.
+- **Any folders you choose.** Movies › WallLoop is always included; add more folders and WallLoop
+  remembers them (read-only, security-scoped bookmarks). Removing a folder never deletes files.
+- **Live library.** Add or delete videos in Finder and WallLoop updates within a second; if the video
+  on screen disappears, it moves on.
+- **Hardware decoding only.** Videos your Mac can't decode in hardware (for example AV1 on M1/M2, or
+  VP9) are listed under "Can't Play" with the reason instead of draining your battery.
+- **HEVC with alpha.** Transparent areas show your desktop picture through the video.
 - *(planned, M4)* Favorites, "shuffle favorites only", and the current video's thumbnail in the menu.
-- *(planned, M5)* Pause automatically on battery, in Low Power Mode, when an app covers the desktop,
-  and while the Mac is locked or asleep.
+- **Pauses itself.** Always while the screen is locked, the displays or Mac are asleep, or another
+  user is active; and, unless you turn it off, on battery power, in Low Power Mode, and when
+  full-screen apps or windows cover every display. The menu shows why it's paused, playback resumes
+  where it left off, and the shuffle timer waits.
 - *(planned, M6)* Library grid, launch at login and global keyboard shortcuts.
 
 ## Install
@@ -42,8 +49,8 @@ and open source.
 2. Open the DMG and drag **WallLoop** onto **Applications**.
 3. Open WallLoop from Applications. It has no Dock icon: look for its icon in the menu bar.
 4. Add your videos. Put them in **Movies › WallLoop** (WallLoop creates the folder on first launch),
-   or choose another folder in **Settings › Library** *(planned, M3)*. macOS asks once for
-   permission to read each folder you choose.
+   or choose another folder in **Settings › Library**. WallLoop can only read the folders you
+   choose.
 
 WallLoop is signed with a Developer ID and notarized by Apple, so it opens without Gatekeeper
 warnings. If macOS says it can't check the app, you downloaded an unsigned test build: get the
@@ -61,11 +68,19 @@ the URL configured at build time. You can turn automatic checks off in **Setting
 
 ## Performance
 
-<!-- Filled in after measuring a release build: CPU and GPU use while playing 1080p and 4K HEVC
-and H.264 on one and two displays, on battery and on power, measured with
-`sudo powermetrics --samplers cpu_power,gpu_power -i 5000` and Activity Monitor. -->
+WallLoop decodes video with the Mac's media engine (VideoToolbox, via AVFoundation) and skips
+files that would need software decoding.
 
-*Measurements coming before the first release.*
+| Situation | Measured |
+| --- | --- |
+| Playing one H.264 video, one 1710×1112 display, Apple silicon MacBook | ~1.8% CPU (Activity Monitor/`top`), 18 MB memory |
+| Paused (any reason) | ~0% CPU: decoding stops, the last frame stays on screen |
+
+- Displays showing the same video share one decoder, so a second display adds only compositing.
+- The display can always sleep: playback never holds a display-sleep assertion.
+- GPU and package power: measure on your own hardware with
+  `sudo powermetrics --samplers cpu_power,gpu_power -i 5000` while a video plays, and compare with
+  WallLoop paused.
 
 ## Build from source
 
@@ -231,6 +246,21 @@ For Liquid Glass on macOS 26 and later, you can also make a layered icon in Appl
 Save it as `Sources/Resources/WallLoop.icon`, then set `ASSETCATALOG_COMPILER_APPICON_NAME: WallLoop`
 in `project.yml` and run `xcodegen generate`. macOS 26 uses the `.icon`. Keep the PNG set so
 macOS 14 and 15 still have an icon.
+
+## Labs: live video on the lock screen
+
+On macOS 14 and later the lock screen shows your desktop picture. Each time the wallpaper changes,
+WallLoop sets a still frame from the current video as the desktop picture on every display, so the
+lock screen matches what was playing. Only the lock screen itself is still.
+
+A *moving* lock screen would need macOS's wallpaper extension point (`com.apple.wallpaper`). That is
+built on Apple's private `WallpaperExtensionKit` framework, which has no public headers or
+documentation, and it requires an Apple-private entitlement (`com.apple.private.wallpaper.extension`)
+that Apple doesn't grant to developers. Using it would mean reverse engineering private code, could
+break in any macOS update, and could leave the lock screen black if something went wrong. WallLoop
+doesn't do that. The full research and a checklist for re-checking each macOS release are in
+[docs/lock-screen-research.md](docs/lock-screen-research.md). If Apple publishes a real API, WallLoop
+will add it as an opt-in Labs feature.
 
 ## Legal
 

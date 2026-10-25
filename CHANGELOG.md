@@ -19,6 +19,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Lock screen and login window match the wallpaper: a still frame becomes the desktop picture.
 - Shuffle (every video plays before any repeats) or in-order playback, a shuffle timer from
   5 minutes to daily, and Previous / Next / Pause in the menu bar.
+- Library: Movies › WallLoop plus any folders you choose (remembered with security-scoped
+  bookmarks), watched live with FSEvents, cached thumbnails, hide or move to Trash.
+- Hardware decode check: videos that would need software decoding are listed under "Can't Play".
+- HEVC with alpha plays over the existing desktop picture.
+- Automatic pause while locked, asleep or switched to another user, and (optional) on battery, in
+  Low Power Mode, or when the desktop is covered; the menu shows the reason.
 - Menu bar app with a Settings window (Library, General, About) that uses Liquid Glass on
   macOS 26 and later.
 
