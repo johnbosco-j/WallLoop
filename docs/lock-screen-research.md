@@ -91,8 +91,8 @@ plutil -p /System/Library/ExtensionKit/ExtensionPoints/com.apple.wallpaper.appex
 }
 ```
 
-**This is the decisive finding.** The extension point requires every extension to carry
-**`com.apple.private.wallpaper.extension`**. The `com.apple.private.` prefix marks an
+The extension point's definition lists **`com.apple.private.wallpaper.extension`** as a required
+entitlement for every extension (but see the correction below: it isn't enforced). The `com.apple.private.` prefix marks an
 Apple-private entitlement. Apple staff have said on the developer forums that third-party
 developers can't get a provisioning profile that authorizes an Apple-private entitlement
 ([thread 756747](https://developer.apple.com/forums/thread/756747),
@@ -116,8 +116,8 @@ These list Apple's own wallpaper extensions: `WallpaperAerialsExtension`,
 `WallpaperDynamicExtension`, `WallpaperImageExtension`, `WallpaperSonomaExtension`,
 `WallpaperSequoiaExtension`, `WallpaperGradientExtension`, `WallpaperMacintoshExtension` and
 others. Live and animated wallpapers on the lock screen come from these extensions. A
-third-party app installed on this Mac also registers an extension at this point. We deliberately
-didn't inspect it, because of the rule against studying other wallpaper apps.
+third-party app installed on this Mac also registers an extension at this point; the correction
+above records what its signing metadata and Info.plist show. We didn't read its code.
 
 ### 3. Documentation and WWDC
 
