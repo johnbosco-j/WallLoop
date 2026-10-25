@@ -41,6 +41,16 @@ struct Scheduler {
         return selection
     }
 
+    /// Records a selection the user chose directly, such as clicking a video in the library.
+    mutating func choose(_ selection: Selection) {
+        guard !selection.isEmpty else { return }
+        history.append(selection)
+        if history.count > Self.historyLimit {
+            history.removeFirst(history.count - Self.historyLimit)
+        }
+        index = history.count - 1
+    }
+
     /// Moves back to the most recent earlier selection whose files all still exist.
     mutating func previous() -> Selection? {
         for i in stride(from: index - 1, through: 0, by: -1) where history[i].allSatisfy(fileExists) {

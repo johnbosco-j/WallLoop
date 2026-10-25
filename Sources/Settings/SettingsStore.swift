@@ -14,6 +14,8 @@ final class SettingsStore {
         static let pauseOnBattery = "pauseOnBattery"
         static let pauseInLowPowerMode = "pauseInLowPowerMode"
         static let pauseWhenCovered = "pauseWhenCovered"
+        static let favorites = "favorites"
+        static let favoritesOnly = "favoritesOnly"
     }
 
     @ObservationIgnored private let defaults: UserDefaults
@@ -41,6 +43,15 @@ final class SettingsStore {
         didSet { defaults.set(pauseWhenCovered, forKey: Key.pauseWhenCovered) }
     }
 
+    /// Paths of favorite videos.
+    var favorites: Set<String> {
+        didSet { defaults.set(favorites.sorted(), forKey: Key.favorites) }
+    }
+    /// Shuffle only among favorites (when at least one is in the library).
+    var favoritesOnly: Bool {
+        didSet { defaults.set(favoritesOnly, forKey: Key.favoritesOnly) }
+    }
+
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         shuffleInterval = Self.value(defaults, Key.shuffleInterval, default: .oneHour)
@@ -50,6 +61,8 @@ final class SettingsStore {
         pauseOnBattery = defaults.object(forKey: Key.pauseOnBattery) as? Bool ?? true
         pauseInLowPowerMode = defaults.object(forKey: Key.pauseInLowPowerMode) as? Bool ?? true
         pauseWhenCovered = defaults.object(forKey: Key.pauseWhenCovered) as? Bool ?? true
+        favorites = Set(defaults.stringArray(forKey: Key.favorites) ?? [])
+        favoritesOnly = defaults.bool(forKey: Key.favoritesOnly)
     }
 
     private nonisolated static func value<T: RawRepresentable>(

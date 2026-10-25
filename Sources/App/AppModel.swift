@@ -61,7 +61,7 @@ final class AppModel {
     }
 
     func next() {
-        if let selection = scheduler.next(from: library.videos, count: slotCount) {
+        if let selection = scheduler.next(from: candidates, count: slotCount) {
             present(selection)
         } else if library.videos.isEmpty {
             engine.clear()
@@ -75,6 +75,35 @@ final class AppModel {
             present(selection)
         }
         restartTimer()
+    }
+
+    /// Plays `video` now, on every display or on the first one in per-display mode.
+    func play(_ video: URL) {
+        guard library.isPlayable(video) else { return }
+        scheduler.choose([video])
+        present([video])
+        restartTimer()
+    }
+
+    // MARK: Favorites
+
+    func isFavorite(_ video: URL) -> Bool {
+        settings.favorites.contains(video.path)
+    }
+
+    func toggleFavorite(_ video: URL) {
+        if isFavorite(video) {
+            settings.favorites.remove(video.path)
+        } else {
+            settings.favorites.insert(video.path)
+        }
+    }
+
+    /// The videos shuffle draws from: favorites only when that's on and any are available.
+    private var candidates: [URL] {
+        guard settings.favoritesOnly else { return library.videos }
+        let favorites = library.videos.filter(isFavorite)
+        return favorites.isEmpty ? library.videos : favorites
     }
 
     func togglePause() {

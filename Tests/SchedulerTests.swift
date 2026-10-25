@@ -84,4 +84,12 @@ struct SchedulerTests {
         #expect(scheduler.next(from: [], count: 1) == nil)
         #expect(scheduler.current == nil)
     }
+
+    @Test func chosenVideoBecomesCurrentAndPreviousReturnsToEarlier() {
+        var scheduler = Scheduler(fileExists: { _ in true })
+        let first = scheduler.next(from: videos, count: 1)
+        scheduler.choose([videos[3]])
+        #expect(scheduler.current == [videos[3]])
+        #expect(scheduler.previous() == first)
+    }
 }

@@ -49,4 +49,16 @@ struct SettingsStoreTests {
         #expect(ShuffleInterval.daily.phrase == "Every day")
         #expect(ShuffleInterval.fifteenMinutes.phrase == "Every 15 minutes")
     }
+
+    @Test func favoritesPersist() {
+        let store = SettingsStore(defaults: defaults)
+        #expect(store.favorites.isEmpty)
+        #expect(!store.favoritesOnly)
+        store.favorites.insert("/videos/a.mp4")
+        store.favoritesOnly = true
+        let reloaded = SettingsStore(defaults: defaults)
+        #expect(reloaded.favorites == ["/videos/a.mp4"])
+        #expect(reloaded.favoritesOnly)
+        defaults.removePersistentDomain(forName: suiteName)
+    }
 }
