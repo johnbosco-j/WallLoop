@@ -31,7 +31,12 @@ final class MenuBarController: NSObject, NSMenuDelegate {
             menu.addItem(makeItem("Add Videos to Movies › WallLoop…", #selector(showVideoFolder),
                                   symbol: "folder"))
         } else {
-            menu.addItem(.sectionHeader(title: model.isPaused ? "Paused" : "Now Playing"))
+            let header = if let reason = model.pauseReason {
+                "Paused — \(reason.title)"
+            } else {
+                model.isPaused ? "Paused" : "Now Playing"
+            }
+            menu.addItem(.sectionHeader(title: header))
             for url in model.nowPlaying {
                 let item = NSMenuItem(title: url.deletingPathExtension().lastPathComponent,
                                       action: nil, keyEquivalent: "")

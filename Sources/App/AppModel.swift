@@ -10,20 +10,32 @@ final class AppModel {
     let library: Library
 
     private(set) var nowPlaying: [URL] = []
+    /// Paused by the user from the menu.
     private(set) var isPaused = false
+    /// Paused automatically (battery, lock screen, covered desktop…), if at all.
+    private(set) var pauseReason: PauseReason?
 
     @ObservationIgnored private var scheduler = Scheduler()
     @ObservationIgnored private let engine: WallpaperEngine
     @ObservationIgnored private let stills = LockScreenStill()
     @ObservationIgnored private var timer: Timer?
+    @ObservationIgnored private let pausePolicy: PausePolicy
 
     init(settings: SettingsStore, library: Library = Library()) {
         self.settings = settings
         self.library = library
         engine = WallpaperEngine(fitMode: settings.fitMode)
+        pausePolicy = PausePolicy(settings: settings)
+        pauseReason = pausePolicy.reason
         scheduler.order = settings.playbackOrder
 
         engine.onScreensChanged = { [weak self] in self?.redisplay() }
+        engine.onVisibilityChange = { [weak self] visible in self?.pausePolicy.setCovered(!visible) }
+        pausePolicy.onChange = { [weak self] reason in
+            self?.pauseReason = reason
+            self?.applyPause()
+        }
+        applyPause()
 
         observe({ settings.fitMode }) { [weak self] fitMode in
             guard let self else { return }
@@ -61,7 +73,14 @@ final class AppModel {
 
     func togglePause() {
         isPaused.toggle()
-        engine.setPaused(isPaused)
+        applyPause()
+    }
+
+    /// Paused by the user or automatically. Resuming continues the same video.
+    private var isEffectivelyPaused: Bool { isPaused || pauseReason != nil }
+
+    private func applyPause() {
+        engine.setPaused(isEffectivelyPaused)
     }
 
     /// Rescans the library and starts playing if nothing is on screen yet.
@@ -93,7 +112,7 @@ final class AppModel {
         guard let seconds = settings.shuffleInterval.seconds else { return }
         timer = Timer.scheduledTimer(withTimeInterval: seconds, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated {
-                guard let self, !self.isPaused else { return }
+                guard let self, !self.isEffectivelyPaused else { return }
                 self.next()
             }
         }
