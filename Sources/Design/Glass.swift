@@ -15,6 +15,16 @@ extension View {
         }
     }
 
+    /// A small glass capsule, for badges over thumbnails.
+    @ViewBuilder
+    func glassCapsule() -> some View {
+        if #available(macOS 26, *) {
+            glassEffect(.regular, in: .capsule)
+        } else {
+            background(.ultraThinMaterial, in: .capsule)
+        }
+    }
+
     @ViewBuilder
     func glassButtonStyle(prominent: Bool = false) -> some View {
         if #available(macOS 26, *) {

@@ -26,6 +26,9 @@ packages:
   Sparkle:
     url: https://github.com/sparkle-project/Sparkle
     from: 2.10.0
+  KeyboardShortcuts:
+    url: https://github.com/sindresorhus/KeyboardShortcuts
+    from: 3.1.0
 
 targets:
   # Distributed as a Developer ID-signed, notarized DMG with Sparkle updates.
@@ -36,6 +39,7 @@ targets:
       - Sources
     dependencies:
       - package: Sparkle
+      - package: KeyboardShortcuts
     settings:
       base:
         PRODUCT_NAME: WallLoop

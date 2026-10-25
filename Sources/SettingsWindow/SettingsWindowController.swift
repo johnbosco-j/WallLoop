@@ -2,7 +2,7 @@ import AppKit
 import SwiftUI
 
 enum SettingsPane: String, CaseIterable, Identifiable {
-    case library, general, about
+    case library, general, shortcuts, about
 
     var id: Self { self }
 
@@ -10,6 +10,7 @@ enum SettingsPane: String, CaseIterable, Identifiable {
         switch self {
         case .library: "Library"
         case .general: "General"
+        case .shortcuts: "Shortcuts"
         case .about: "About"
         }
     }
@@ -18,15 +19,25 @@ enum SettingsPane: String, CaseIterable, Identifiable {
         switch self {
         case .library: "film.stack"
         case .general: "gearshape"
+        case .shortcuts: "command"
         case .about: "info.circle"
         }
     }
 }
 
+/// The selected pane, remembered across launches.
 @MainActor
 @Observable
 final class SettingsNavigation {
-    var selection: SettingsPane? = .library
+    private static let key = "settingsPane"
+
+    var selection: SettingsPane? {
+        didSet { UserDefaults.standard.set(selection?.rawValue, forKey: Self.key) }
+    }
+
+    init() {
+        selection = UserDefaults.standard.string(forKey: Self.key).flatMap(SettingsPane.init(rawValue:)) ?? .library
+    }
 }
 
 /// Hosts the SwiftUI settings in a plain NSWindow. A SwiftUI `Settings` scene is
@@ -59,7 +70,7 @@ final class SettingsWindowController {
         window.styleMask = [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView]
         window.toolbarStyle = .unified
         window.isReleasedWhenClosed = false
-        window.setContentSize(NSSize(width: 820, height: 560))
+        window.setContentSize(NSSize(width: 920, height: 640))
         window.center()
         window.setFrameAutosaveName("SettingsWindow")
         return window

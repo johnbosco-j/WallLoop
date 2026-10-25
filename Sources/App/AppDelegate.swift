@@ -17,6 +17,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         self.settingsWindow = settingsWindow
         model.start()
         Updater.shared.start()
+        Shortcuts.register(for: model)
+
+        // First run: nothing to play yet, so show how to add videos.
+        Task {
+            await model.library.waitForScan()
+            if model.library.videos.isEmpty, model.library.folders.count == 1 {
+                settingsWindow.show(.library)
+            }
+        }
     }
 
     // Opening the app again from Finder or Spotlight while it runs shows Settings,
