@@ -23,7 +23,6 @@ final class MenuBarController: NSObject, NSMenuDelegate {
     }
 
     func menuNeedsUpdate(_ menu: NSMenu) {
-        model.refreshLibrary()
         menu.removeAllItems()
 
         if model.nowPlaying.isEmpty {

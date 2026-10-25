@@ -42,6 +42,9 @@ final class WallpaperEngine: NSObject {
             name: NSWindow.didChangeOcclusionStateNotification, object: nil)
     }
 
+    /// Whether a video has an alpha channel; such videos play over the desktop picture.
+    var hasAlpha: @MainActor (URL) -> Bool = { _ in false }
+
     /// Shows `selection` across the displays: video *i* on display *i*, wrapping
     /// around when there are more displays than videos. Channels whose video
     /// stays on screen keep playing without a restart.
@@ -64,7 +67,10 @@ final class WallpaperEngine: NSObject {
         assignment = newAssignment
 
         for (id, url) in newAssignment {
-            windows[id]?.player = channels[url]?.player
+            guard let window = windows[id] else { continue }
+            window.player = channels[url]?.player
+            window.showsTransparency = hasAlpha(url)
+            if !window.isVisible { window.orderFront(nil) }
         }
         channels.values.forEach { isPaused ? $0.pause() : $0.play() }
         log.info("Showing \(selection.map(\.lastPathComponent), privacy: .public) on \(newAssignment.count) display(s)")
@@ -73,6 +79,17 @@ final class WallpaperEngine: NSObject {
     func setPaused(_ paused: Bool) {
         isPaused = paused
         channels.values.forEach { paused ? $0.pause() : $0.play() }
+    }
+
+    /// Stops all playback and hides the windows, leaving the desktop picture.
+    func clear() {
+        channels.values.forEach { $0.stop() }
+        channels = [:]
+        assignment = [:]
+        for window in windows.values {
+            window.player = nil
+            window.orderOut(nil)
+        }
     }
 
     /// Creates, moves or removes windows so each connected display has exactly one.
