@@ -16,6 +16,16 @@ final class WallpaperWindow: NSWindow {
         didSet { playerLayer.videoGravity = fitMode.videoGravity }
     }
 
+    /// For videos with alpha: let the desktop picture show through transparent areas.
+    var showsTransparency = false {
+        didSet {
+            guard showsTransparency != oldValue else { return }
+            isOpaque = !showsTransparency
+            backgroundColor = showsTransparency ? .clear : .black
+            playerLayer.backgroundColor = showsTransparency ? nil : NSColor.black.cgColor
+        }
+    }
+
     init(screen: NSScreen) {
         super.init(contentRect: screen.frame, styleMask: .borderless, backing: .buffered, defer: false)
         level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.desktopWindow)))

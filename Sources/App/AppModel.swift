@@ -20,19 +20,23 @@ final class AppModel {
     init(settings: SettingsStore, library: Library = Library()) {
         self.settings = settings
         self.library = library
+        // History skips videos that were deleted, hidden or whose folder was removed.
+        scheduler = Scheduler(fileExists: { [library] url in MainActor.assumeIsolated { library.isPlayable(url) } })
         engine = WallpaperEngine(fitMode: settings.fitMode)
         scheduler.order = settings.playbackOrder
 
         engine.onScreensChanged = { [weak self] in self?.redisplay() }
+        engine.hasAlpha = { [library] url in library.hasAlpha(url) }
 
         observe({ settings.fitMode }) { [weak self] fitMode in
             guard let self else { return }
             engine.fitMode = fitMode
-            stills.update(assignment: engine.assignment, fitMode: fitMode)
+            updateStills()
         }
         observe({ settings.displayMode }) { [weak self] _ in self?.redisplay() }
         observe({ settings.playbackOrder }) { [weak self] order in self?.scheduler.order = order }
         observe({ settings.shuffleInterval }) { [weak self] _ in self?.restartTimer() }
+        observe({ library.videos }) { [weak self] videos in self?.libraryChanged(videos) }
     }
 
     /// How many different videos are on screen at once.
@@ -41,13 +45,15 @@ final class AppModel {
     }
 
     func start() {
-        library.refresh()
-        next()
+        if !library.videos.isEmpty { next() }
     }
 
     func next() {
         if let selection = scheduler.next(from: library.videos, count: slotCount) {
             present(selection)
+        } else if library.videos.isEmpty {
+            engine.clear()
+            nowPlaying = []
         }
         restartTimer()
     }
@@ -64,10 +70,15 @@ final class AppModel {
         engine.setPaused(isPaused)
     }
 
-    /// Rescans the library and starts playing if nothing is on screen yet.
-    func refreshLibrary() {
-        library.refresh()
-        if nowPlaying.isEmpty, !library.videos.isEmpty { next() }
+    /// Starts playing when the first videos arrive, and moves on when a video
+    /// on screen leaves the library (deleted, hidden, or its folder removed).
+    private func libraryChanged(_ videos: [URL]) {
+        let available = Set(videos)
+        if nowPlaying.isEmpty {
+            if !videos.isEmpty { next() }
+        } else if !nowPlaying.allSatisfy(available.contains) {
+            next()
+        }
     }
 
     /// Shows the current selection again, after a display or display-mode change.
@@ -84,7 +95,13 @@ final class AppModel {
         let shown = Array(selection.prefix(slotCount))
         engine.show(shown)
         nowPlaying = shown
-        stills.update(assignment: engine.assignment, fitMode: settings.fitMode)
+        updateStills()
+    }
+
+    private func updateStills() {
+        // Videos with alpha play over the existing desktop picture, so leave it alone.
+        stills.update(assignment: engine.assignment.filter { !library.hasAlpha($0.value) },
+                      fitMode: settings.fitMode)
     }
 
     private func restartTimer() {
