@@ -19,9 +19,11 @@ app's servers.
 The wallpaper extension point exists, and Apple's own wallpapers (Aerials, Dynamic, Sonoma,
 Sequoia and others) are extensions of it. But the framework behind it, `WallpaperExtensionKit`,
 is a **private framework**. The SDK ships it with no headers, no Swift interface and no module
-map. On top of that, the extension point **requires an Apple-private entitlement** that Apple
-does not grant to third-party developers. Apple documents neither the extension point nor the
-framework, and nothing about wallpapers was announced at WWDC25 or WWDC26.
+map. The extension point's definition lists an Apple-private entitlement as required, but
+**macOS 27 doesn't enforce it** (see the correction in section 2): a notarized third-party
+extension without it is launched by the system. Apple documents neither the extension point nor
+the framework, and nothing about wallpapers was announced at WWDC25 or WWDC26. So the blocker is
+the undocumented, private protocol, not signing or notarization.
 
 WallLoop instead sets a still frame of the current video as the desktop picture, using public
 API. The lock screen shows that frame (see [What WallLoop does instead](#what-wallloop-does-instead)).
@@ -96,8 +98,14 @@ developers can't get a provisioning profile that authorizes an Apple-private ent
 ([thread 756747](https://developer.apple.com/forums/thread/756747),
 [thread 87740](https://developer.apple.com/forums/thread/87740)).
 
-Apple doesn't document whether macOS blocks this particular entitlement at launch for a
-Developer ID app. Either way, using it means claiming an entitlement Apple doesn't grant us.
+**Correction (25 October 2026, later the same day).** The entitlement requirement is not enforced
+in practice. A notarized Developer ID app installed on this Mac ships an extension declaring
+`EXExtensionPointIdentifier = com.apple.wallpaper` whose only entitlement is
+`com.apple.security.app-sandbox` (no `com.apple.private.wallpaper.extension`, no provisioning
+profile), and the system launches it. We checked only its signing metadata and Info.plist
+(`codesign -d --entitlements`, `codesign -dvv`, `plutil -p`, `otool -L`), not its code. Its
+extension links only the public `ExtensionFoundation` and `AVFoundation`, not
+`WallpaperExtensionKit`, so it must implement the wallpaper agent's private protocol itself.
 
 ```bash
 ls /System/Library/ExtensionKit/Extensions | grep -i -E 'wallpaper|aerial'
@@ -134,8 +142,8 @@ Recorded so the decision is easy to revisit:
 - **It could break on any macOS update.** Private frameworks have no stability promise. Their
   types, XPC protocol or entitlement checks can change in any update, even a minor one, with no
   warning or deprecation period.
-- **It needs a private entitlement.** It may be rejected at launch, now or after a future update,
-  and Apple won't grant it.
+- **The private entitlement could start being enforced.** It's listed as required today but not
+  checked; a future update could start checking it, and Apple won't grant it.
 - **App Store:** guideline 2.5.1 (public APIs only) means it would be rejected. WallLoop isn't on
   the App Store, but this rules that channel out for good.
 - **Notarization:** notarization checks for malware and code signing, not API use, so it might

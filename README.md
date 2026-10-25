@@ -268,10 +268,10 @@ WallLoop sets a still frame from the current video as the desktop picture on eve
 lock screen matches what was playing. Only the lock screen itself is still.
 
 A *moving* lock screen would need macOS's wallpaper extension point (`com.apple.wallpaper`). That is
-built on Apple's private `WallpaperExtensionKit` framework, which has no public headers or
-documentation, and it requires an Apple-private entitlement (`com.apple.private.wallpaper.extension`)
-that Apple doesn't grant to developers. Using it would mean reverse engineering private code, could
-break in any macOS update, and could leave the lock screen black if something went wrong. WallLoop
+built on Apple's private `WallpaperExtensionKit` framework and an undocumented protocol between
+the extension and macOS's wallpaper agent, with no public headers or documentation. Using it means
+reverse engineering that protocol, could break in any macOS update, and could leave the lock screen
+black if something went wrong. WallLoop
 doesn't do that. The full research and a checklist for re-checking each macOS release are in
 [docs/lock-screen-research.md](docs/lock-screen-research.md). If Apple publishes a real API, WallLoop
 will add it as an opt-in Labs feature.
