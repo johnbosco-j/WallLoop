@@ -34,12 +34,12 @@ final class SettingsNavigation {
 /// window lets it look like a regular Mac app window.
 @MainActor
 final class SettingsWindowController {
-    private let settings: SettingsStore
+    private let model: AppModel
     private let navigation = SettingsNavigation()
     private var window: NSWindow?
 
-    init(settings: SettingsStore) {
-        self.settings = settings
+    init(model: AppModel) {
+        self.model = model
     }
 
     func show(_ pane: SettingsPane? = nil) {
@@ -51,7 +51,7 @@ final class SettingsWindowController {
     }
 
     private func makeWindow() -> NSWindow {
-        let host = NSHostingController(rootView: SettingsView(settings: settings, navigation: navigation))
+        let host = NSHostingController(rootView: SettingsView(model: model, navigation: navigation))
         host.sceneBridgingOptions = [.toolbars, .title]
         host.sizingOptions = [.minSize]
 

@@ -5,11 +5,13 @@ import AppKit
 @MainActor
 final class MenuBarController: NSObject, NSMenuDelegate {
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-    private let settings: SettingsStore
+    private let model: AppModel
     private let openSettings: (SettingsPane?) -> Void
 
-    init(settings: SettingsStore, openSettings: @escaping (SettingsPane?) -> Void) {
-        self.settings = settings
+    private var settings: SettingsStore { model.settings }
+
+    init(model: AppModel, openSettings: @escaping (SettingsPane?) -> Void) {
+        self.model = model
         self.openSettings = openSettings
         super.init()
 
@@ -21,17 +23,34 @@ final class MenuBarController: NSObject, NSMenuDelegate {
     }
 
     func menuNeedsUpdate(_ menu: NSMenu) {
+        model.refreshLibrary()
         menu.removeAllItems()
 
-        let now = NSMenuItem(title: "No Videos Yet", action: nil, keyEquivalent: "")
-        now.isEnabled = false
-        menu.addItem(now)
+        if model.nowPlaying.isEmpty {
+            menu.addItem(.sectionHeader(title: "No Videos Yet"))
+            menu.addItem(makeItem("Add Videos to Movies › WallLoop…", #selector(showVideoFolder),
+                                  symbol: "folder"))
+        } else {
+            menu.addItem(.sectionHeader(title: model.isPaused ? "Paused" : "Now Playing"))
+            for url in model.nowPlaying {
+                let item = NSMenuItem(title: url.deletingPathExtension().lastPathComponent,
+                                      action: nil, keyEquivalent: "")
+                item.isEnabled = false
+                menu.addItem(item)
+            }
+        }
         menu.addItem(.separator())
 
-        // Playback controls arrive with the wallpaper engine (Milestone 2).
-        menu.addItem(NSMenuItem(title: "Previous", action: nil, keyEquivalent: ""))
-        menu.addItem(NSMenuItem(title: "Next", action: nil, keyEquivalent: ""))
-        menu.addItem(NSMenuItem(title: "Pause", action: nil, keyEquivalent: ""))
+        let hasVideos = !model.library.videos.isEmpty
+        let previous = makeItem("Previous", #selector(previous), symbol: "backward.fill")
+        let next = makeItem("Next", #selector(next), symbol: "forward.fill")
+        let pause = model.isPaused
+            ? makeItem("Play", #selector(togglePause), symbol: "play.fill")
+            : makeItem("Pause", #selector(togglePause), symbol: "pause.fill")
+        for item in [previous, next, pause] {
+            if !hasVideos { item.action = nil }
+            menu.addItem(item)
+        }
         menu.addItem(.separator())
 
         let shuffleMenu = NSMenu()
@@ -42,6 +61,7 @@ final class MenuBarController: NSObject, NSMenuDelegate {
             shuffleMenu.addItem(item)
         }
         let shuffleItem = NSMenuItem(title: "Shuffle Every", action: nil, keyEquivalent: "")
+        shuffleItem.image = NSImage(systemSymbolName: "timer", accessibilityDescription: nil)
         shuffleItem.submenu = shuffleMenu
         menu.addItem(shuffleItem)
 
@@ -54,17 +74,24 @@ final class MenuBarController: NSObject, NSMenuDelegate {
         }
         menu.addItem(.separator())
 
-        menu.addItem(makeItem("Open Library…", #selector(showLibrary)))
-        menu.addItem(makeItem("Settings…", #selector(showSettings), key: ","))
+        menu.addItem(makeItem("Open Library…", #selector(showLibrary), symbol: "film.stack"))
+        menu.addItem(makeItem("Settings…", #selector(showSettings), key: ",", symbol: "gearshape"))
         menu.addItem(.separator())
         menu.addItem(makeItem("Quit WallLoop", #selector(quit), key: "q"))
     }
 
-    private func makeItem(_ title: String, _ action: Selector, key: String = "") -> NSMenuItem {
+    private func makeItem(_ title: String, _ action: Selector, key: String = "", symbol: String? = nil) -> NSMenuItem {
         let item = NSMenuItem(title: title, action: action, keyEquivalent: key)
         item.target = self
+        if let symbol {
+            item.image = NSImage(systemSymbolName: symbol, accessibilityDescription: nil)
+        }
         return item
     }
+
+    @objc private func previous() { model.previous() }
+    @objc private func next() { model.next() }
+    @objc private func togglePause() { model.togglePause() }
 
     @objc private func chooseInterval(_ sender: NSMenuItem) {
         guard let raw = sender.representedObject as? String,
@@ -78,6 +105,7 @@ final class MenuBarController: NSObject, NSMenuDelegate {
         settings.playbackOrder = order
     }
 
+    @objc private func showVideoFolder() { NSWorkspace.shared.open(model.library.defaultFolder) }
     @objc private func showLibrary() { openSettings(.library) }
     @objc private func showSettings() { openSettings(nil) }
     @objc private func quit() { NSApp.terminate(nil) }

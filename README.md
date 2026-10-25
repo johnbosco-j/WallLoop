@@ -5,8 +5,9 @@ Live video wallpapers for macOS, made from your own videos.
 Put videos in a folder, give WallLoop access to it, and your desktop plays them on a loop,
 muted and hardware-decoded, one window per display. WallLoop lives in the menu bar.
 
-> **Status:** early development (Milestone 1 of 8). The app shell, menu bar and Settings window
-> work; video playback lands in Milestone 2.
+> **Status:** early development (Milestone 2 of 8). Videos in `~/Movies/WallLoop` play as the
+> wallpaper on every display, with Next, Previous, Pause and the shuffle timer in the menu bar.
+> Choosing other folders lands in Milestone 3.
 
 <!-- Screenshots: add docs/screenshots/menu.png, library.png and general.png when the UI is final. -->
 
@@ -69,8 +70,11 @@ CODE_SIGN_IDENTITY = Apple Development
 | --- | --- |
 | `project.yml` | XcodeGen spec: the `WallLoop` (Developer ID) and `WallLoop-AppStore` targets, plus tests |
 | `Config/` | Info.plist, entitlements for each target, shared build settings |
-| `Sources/App` | Entry point and app delegate |
+| `Sources/App` | Entry point, app delegate, and `AppModel`, which connects library, scheduler and engine |
 | `Sources/Settings` | `SettingsStore`: preferences saved in `UserDefaults` |
+| `Sources/Engine` | `WallpaperEngine`: one desktop-level window per display, shared looping players, lock screen stills |
+| `Sources/Library` | `Library`: the videos WallLoop can play |
+| `Sources/Scheduler` | `Scheduler`: shuffle deck, in-order playback, history for Previous |
 | `Sources/MenuBar` | `MenuBarController`: the status item and its menu |
 | `Sources/SettingsWindow` | SwiftUI Settings window (Library, General, About) |
 | `Sources/Design` | Liquid Glass helpers, with fallbacks for macOS 14–15 |

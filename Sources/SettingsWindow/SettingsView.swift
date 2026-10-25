@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @Bindable var settings: SettingsStore
+    let model: AppModel
     @Bindable var navigation: SettingsNavigation
 
     var body: some View {
@@ -12,8 +12,8 @@ struct SettingsView: View {
             .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 260)
         } detail: {
             switch navigation.selection ?? .library {
-            case .library: LibraryPane()
-            case .general: GeneralPane(settings: settings)
+            case .library: LibraryPane(model: model)
+            case .general: GeneralPane(settings: model.settings)
             case .about: AboutPane()
             }
         }

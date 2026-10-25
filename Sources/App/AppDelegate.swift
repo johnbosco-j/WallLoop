@@ -2,20 +2,26 @@ import AppKit
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
-    let settings = SettingsStore()
+    private var model: AppModel?
     private var menuBar: MenuBarController?
-    private lazy var settingsWindow = SettingsWindowController(settings: settings)
+    private var settingsWindow: SettingsWindowController?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        menuBar = MenuBarController(settings: settings) { [weak self] pane in
-            self?.settingsWindow.show(pane)
-        }
+        // Unit tests run inside the app; don't take over the desktop while they do.
+        guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else { return }
+
+        let model = AppModel(settings: SettingsStore())
+        let settingsWindow = SettingsWindowController(model: model)
+        menuBar = MenuBarController(model: model) { pane in settingsWindow.show(pane) }
+        self.model = model
+        self.settingsWindow = settingsWindow
+        model.start()
     }
 
     // Opening the app again from Finder or Spotlight while it runs shows Settings,
     // since a menu bar app has no other window to bring forward.
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-        settingsWindow.show()
+        settingsWindow?.show()
         return true
     }
 }
