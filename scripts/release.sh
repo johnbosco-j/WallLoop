@@ -120,6 +120,20 @@ xcodebuild archive \
 mkdir -p "$EXPORT_DIR"
 if [[ "$ADHOC" == 1 ]]; then
     cp -R "$ARCHIVE/Products/Applications/WallLoop.app" "$EXPORT_DIR/"
+    # Hardened Runtime's library validation won't let an ad hoc app load an ad hoc
+    # framework (Sparkle), and ad hoc builds are never notarized, so re-sign everything
+    # ad hoc without it, inside out, keeping each component's entitlements.
+    log "Re-signing ad hoc without Hardened Runtime"
+    sparkle="$EXPORT_DIR/WallLoop.app/Contents/Frameworks/Sparkle.framework"
+    for item in "$sparkle/Versions/B/XPCServices/Installer.xpc" \
+                "$sparkle/Versions/B/XPCServices/Downloader.xpc" \
+                "$sparkle/Versions/B/Autoupdate" \
+                "$sparkle/Versions/B/Updater.app" \
+                "$sparkle" \
+                "$EXPORT_DIR/WallLoop.app"; do
+        codesign --force --sign - --preserve-metadata=entitlements,identifier "$item"
+    done
+    codesign --verify --deep --strict "$EXPORT_DIR/WallLoop.app"
 else
     log "Exporting with Developer ID"
     cat >"$BUILD_DIR/ExportOptions.plist" <<EOF
