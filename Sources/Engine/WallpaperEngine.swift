@@ -7,17 +7,23 @@ import os
 final class WallpaperEngine: NSObject {
     /// Called after displays are connected, disconnected or rearranged.
     var onScreensChanged: (() -> Void)?
+    /// Called when the desktop becomes hidden (`false`) behind full-screen apps
+    /// or windows on every display, or visible again (`true`).
+    var onVisibilityChange: ((Bool) -> Void)?
 
     var fitMode: FitMode {
         didSet { windows.values.forEach { $0.fitMode = fitMode } }
     }
 
     private(set) var isPaused = false
+    /// Whether any part of any wallpaper window can be seen.
+    private(set) var isAnyWindowVisible = true
     /// Which video each display is showing.
     private(set) var assignment: [CGDirectDisplayID: URL] = [:]
 
     private var windows: [CGDirectDisplayID: WallpaperWindow] = [:]
     private var channels: [URL: PlaybackChannel] = [:]
+    private var visibilityCheck: Task<Void, Never>?
     private let log = Logger(subsystem: "com.johnbosco.wallloop", category: "engine")
 
     init(fitMode: FitMode) {
@@ -31,6 +37,9 @@ final class WallpaperEngine: NSObject {
         NSWorkspace.shared.notificationCenter.addObserver(
             self, selector: #selector(activeSpaceChanged),
             name: NSWorkspace.activeSpaceDidChangeNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(occlusionChanged(_:)),
+            name: NSWindow.didChangeOcclusionStateNotification, object: nil)
     }
 
     /// Shows `selection` across the displays: video *i* on display *i*, wrapping
@@ -85,12 +94,37 @@ final class WallpaperEngine: NSObject {
                 windows[id] = window
             }
         }
+        scheduleVisibilityCheck()
     }
 
     @objc private func screenParametersChanged() {
         log.info("Display configuration changed: \(NSScreen.screens.count) display(s)")
         syncWindows()
         onScreensChanged?()
+    }
+
+    @objc private func occlusionChanged(_ notification: Notification) {
+        guard let window = notification.object as? WallpaperWindow,
+              windows.values.contains(where: { $0 === window }) else { return }
+        scheduleVisibilityCheck()
+    }
+
+    /// Occlusion flickers while switching Spaces, so wait for it to settle.
+    private func scheduleVisibilityCheck() {
+        visibilityCheck?.cancel()
+        visibilityCheck = Task { [weak self] in
+            try? await Task.sleep(for: .milliseconds(500))
+            guard !Task.isCancelled else { return }
+            self?.updateVisibility()
+        }
+    }
+
+    private func updateVisibility() {
+        let visible = windows.isEmpty || windows.values.contains { $0.occlusionState.contains(.visible) }
+        guard visible != isAnyWindowVisible else { return }
+        isAnyWindowVisible = visible
+        log.info("Desktop \(visible ? "visible" : "covered", privacy: .public)")
+        onVisibilityChange?(visible)
     }
 
     @objc private func activeSpaceChanged() {

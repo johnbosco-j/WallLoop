@@ -32,7 +32,7 @@ struct GeneralPane: View {
             } header: {
                 Text("Pause Automatically")
             } footer: {
-                Text("WallLoop always pauses while your Mac is locked or asleep.")
+                Text("WallLoop always pauses while your Mac is locked or asleep, or while another user is using it.")
                     .foregroundStyle(.secondary)
             }
         }
