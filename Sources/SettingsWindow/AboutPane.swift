@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct AboutPane: View {
+    @Bindable private var updater = Updater.shared
+
     private var version: String {
         let info = Bundle.main.infoDictionary
         let short = info?["CFBundleShortVersionString"] as? String ?? "?"
@@ -24,6 +26,22 @@ struct AboutPane: View {
                 Text("Live video wallpapers from your own videos.")
                     .font(.body)
                     .padding(.top, 2)
+
+                VStack(spacing: 8) {
+                    Button("Check for Updates…") { updater.checkForUpdates() }
+                        .glassButtonStyle(prominent: true)
+                        .controlSize(.large)
+                        .disabled(!updater.canCheckForUpdates)
+                    Toggle("Automatically check for updates", isOn: $updater.automaticallyChecksForUpdates)
+                        .toggleStyle(.checkbox)
+                        .disabled(!updater.isConfigured)
+                    if !updater.isConfigured {
+                        Text("Updates are turned off in this build.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(.top, 6)
 
                 Divider().padding(.vertical, 6)
 

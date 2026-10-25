@@ -16,6 +16,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         self.model = model
         self.settingsWindow = settingsWindow
         model.start()
+        Updater.shared.start()
     }
 
     // Opening the app again from Finder or Spotlight while it runs shows Settings,
