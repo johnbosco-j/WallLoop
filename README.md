@@ -6,8 +6,8 @@ Put videos in a folder, give WallLoop access to it, and your desktop plays them 
 muted and hardware-decoded, one window per display. WallLoop lives in the menu bar, and it's free
 and open source.
 
-> **Status:** in development, not yet released. Items marked *(planned, M…)* below arrive in a later
-> milestone.
+> **Status:** feature-complete for 0.1.0, not yet released. The first signed, notarized DMG will be
+> posted on our community site.
 
 <!-- Screenshots: add these files when the UI is final, then remove this comment.
 ![The WallLoop menu](docs/screenshots/menu.png)
@@ -45,7 +45,17 @@ and open source.
   user is active; and, unless you turn it off, on battery power, in Low Power Mode, and when
   full-screen apps or windows cover every display. The menu shows why it's paused, playback resumes
   where it left off, and the shuffle timer waits.
-- *(planned, M6)* Library grid, launch at login and global keyboard shortcuts.
+- **Library grid** in Settings: thumbnails, click to play, right-click to favorite, show in Finder,
+  hide or move to Trash, search, a favorites filter, and drag and drop of videos or folders.
+- **Open at Login** through macOS's own login-item service (`SMAppService`), not a LaunchAgent.
+- **Global keyboard shortcuts**, changeable in **Settings › Shortcuts**, with no Accessibility
+  permission needed:
+
+  | Action | Default |
+  | --- | --- |
+  | Next wallpaper | ⌃⌥⌘→ |
+  | Previous wallpaper | ⌃⌥⌘← |
+  | Pause or play | ⌃⌥⌘P |
 
 ## Install
 
@@ -273,6 +283,11 @@ content, and it doesn't use any other wallpaper app's servers or code. The "Get 
 menu only opens [Pexels](https://www.pexels.com/videos/), [Pixabay](https://pixabay.com/videos/)
 and [Mixkit](https://mixkit.co/free-stock-video/) in your browser. Check each site's license
 before you use a video.
+
+## Acknowledgements
+
+- [Sparkle](https://sparkle-project.org) for updates (MIT).
+- [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) by Sindre Sorhus (MIT).
 
 ## License
 

@@ -21,6 +21,6 @@ struct SettingsView: View {
             }
         }
         .navigationTitle(pane.title)
-        .frame(minWidth: 760, minHeight: 520)
+        .frame(minWidth: 880, minHeight: 520)
     }
 }

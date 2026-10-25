@@ -27,8 +27,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   Low Power Mode, or when the desktop is covered; the menu shows the reason.
 - Menu: Now Playing header with thumbnail and pause reason, Favorites (heart, submenu, shuffle
   favorites only), and drag and drop of videos or folders onto the menu bar icon.
-- Menu bar app with a Settings window (Library, General, About) that uses Liquid Glass on
-  macOS 26 and later.
+- Settings window that uses Liquid Glass on macOS 26 and later: Library thumbnail grid with
+  search, favorites filter and drag and drop; General (Open at Login via SMAppService, playback,
+  displays, pause rules); Shortcuts; About with update controls and acknowledgements.
+- Global keyboard shortcuts for Next (⌃⌥⌘→), Previous (⌃⌥⌘←) and Pause (⌃⌥⌘P).
+- First launch opens the Library to show how to add videos.
 
 ### Removed
 
