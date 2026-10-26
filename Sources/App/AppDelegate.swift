@@ -9,6 +9,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Unit tests run inside the app; don't take over the desktop while they do.
         guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else { return }
+        Theme.registerFonts()
 
         let model = AppModel(settings: SettingsStore())
         let settingsWindow = SettingsWindowController(model: model)
