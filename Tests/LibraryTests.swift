@@ -176,3 +176,12 @@ struct LibraryTests {
         #expect(await VideoProbe.probe(video) == .playable(hasAlpha: false))
     }
 }
+
+struct VideoPosterTests {
+    @Test func candidateTimesSkipTheFadeIn() {
+        #expect(VideoPoster.candidateTimes(duration: 0) == [0])
+        #expect(VideoPoster.candidateTimes(duration: 20) == [5, 10])
+        #expect(VideoPoster.candidateTimes(duration: 120) == [8, 60])
+        #expect(VideoPoster.candidateTimes(duration: 2) == [1, 1])
+    }
+}

@@ -68,10 +68,7 @@ final class LockScreenStill {
     }
 
     private nonisolated static func frame(of video: URL, maxSize: CGSize) async -> CGImage? {
-        let generator = AVAssetImageGenerator(asset: AVURLAsset(url: video))
-        generator.appliesPreferredTrackTransform = true
-        generator.maximumSize = maxSize
-        return try? await generator.image(at: CMTime(seconds: 1, preferredTimescale: 600)).image
+        await VideoPoster.image(of: video, maxSize: maxSize)
     }
 
     private nonisolated static func writeJPEG(_ image: CGImage, to file: URL) -> Bool {

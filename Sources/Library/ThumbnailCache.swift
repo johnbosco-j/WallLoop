@@ -56,17 +56,15 @@ final class ThumbnailCache {
         guard let values = try? file.resourceValues(forKeys: [.contentModificationDateKey, .fileSizeKey])
         else { return nil }
         let modified = values.contentModificationDate?.timeIntervalSince1970 ?? 0
-        let identity = "\(file.standardizedFileURL.path)|\(modified)|\(values.fileSize ?? 0)"
+        // "poster2": bump when the way the frame is chosen changes, so old thumbnails regenerate.
+        let identity = "poster2|\(file.standardizedFileURL.path)|\(modified)|\(values.fileSize ?? 0)"
         return SHA256.hash(data: Data(identity.utf8)).map { String(format: "%02x", $0) }.joined()
     }
 
     private nonisolated static func loadOrGenerate(_ video: URL, cachedAt file: URL) async -> Data? {
         if let data = try? Data(contentsOf: file) { return data }
 
-        let generator = AVAssetImageGenerator(asset: AVURLAsset(url: video))
-        generator.appliesPreferredTrackTransform = true
-        generator.maximumSize = CGSize(width: maxPixelSize, height: maxPixelSize)
-        guard let image = try? await generator.image(at: CMTime(seconds: 1, preferredTimescale: 600)).image,
+        guard let image = await VideoPoster.image(of: video, maxSize: CGSize(width: maxPixelSize, height: maxPixelSize)),
               let data = jpegData(image) else { return nil }
         try? data.write(to: file, options: .atomic)
         return data
