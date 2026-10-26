@@ -1,50 +1,33 @@
 import SwiftUI
 
-// Liquid Glass on macOS 26 and later, with the closest earlier look on macOS 14–15.
-// Standard controls (sidebars, toolbars, menus) adopt Liquid Glass on their own;
-// these helpers are only for WallLoop's custom surfaces.
+// Floating glass, like Riven's nav capsule (design.md §7): Liquid Glass on macOS 26 and
+// later; on macOS 14–15, `surface` at 72% over a blur with a hairline border.
 
 extension View {
     /// A floating glass panel.
     @ViewBuilder
-    func glassSurface(cornerRadius: CGFloat = 24) -> some View {
+    func glassSurface(cornerRadius: CGFloat = Theme.Radius.card) -> some View {
+        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
         if #available(macOS 26, *) {
-            glassEffect(.regular, in: .rect(cornerRadius: cornerRadius))
+            glassEffect(.regular.tint(Theme.surface.opacity(0.5)), in: shape)
+                .overlay(shape.strokeBorder(Theme.line, lineWidth: 1))
         } else {
-            background(.regularMaterial, in: .rect(cornerRadius: cornerRadius))
+            background(Theme.surface.opacity(0.72), in: shape)
+                .background(.ultraThinMaterial, in: shape)
+                .overlay(shape.strokeBorder(Theme.line, lineWidth: 1))
         }
     }
 
-    /// A small glass capsule, for badges over thumbnails.
+    /// A small glass capsule, for badges and transport controls over thumbnails.
     @ViewBuilder
     func glassCapsule() -> some View {
         if #available(macOS 26, *) {
-            glassEffect(.regular, in: .capsule)
+            glassEffect(.regular.tint(Theme.surface.opacity(0.5)), in: .capsule)
+                .overlay(Capsule().strokeBorder(Theme.line, lineWidth: 1))
         } else {
-            background(.ultraThinMaterial, in: .capsule)
+            background(Theme.surface.opacity(0.72), in: Capsule())
+                .background(.ultraThinMaterial, in: Capsule())
+                .overlay(Capsule().strokeBorder(Theme.line, lineWidth: 1))
         }
-    }
-
-    @ViewBuilder
-    func glassButtonStyle(prominent: Bool = false) -> some View {
-        if #available(macOS 26, *) {
-            if prominent { buttonStyle(.glassProminent) } else { buttonStyle(.glass) }
-        } else {
-            if prominent { buttonStyle(.borderedProminent) } else { buttonStyle(.bordered) }
-        }
-    }
-}
-
-/// The soft gradient behind glass panels, so the glass has something to refract.
-struct Backdrop: View {
-    var body: some View {
-        LinearGradient(
-            colors: [Color(red: 0.36, green: 0.55, blue: 1.0),
-                     Color(red: 0.55, green: 0.38, blue: 0.95),
-                     Color(red: 0.95, green: 0.45, blue: 0.62)],
-            startPoint: .topLeading, endPoint: .bottomTrailing
-        )
-        .opacity(0.55)
-        .ignoresSafeArea()
     }
 }
