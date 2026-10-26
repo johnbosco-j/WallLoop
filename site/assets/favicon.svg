@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Loopy in the rose orbit, matching Sources/Design/BrandMark.swift on the 1024 grid. -->
+  <defs>
+    <radialGradient id="glow" cx="512" cy="520" r="430" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF5C8A" stop-opacity=".34"/>
+      <stop offset=".5" stop-color="#FF5C8A" stop-opacity=".1"/>
+      <stop offset="1" stop-color="#FF5C8A" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect x="8" y="8" width="1008" height="1008" rx="232" fill="#141415" stroke="#3A3A40" stroke-width="16"/>
+  <circle cx="512" cy="520" r="430" fill="url(#glow)"/>
+  <circle cx="512" cy="512" r="350" fill="none" stroke="#FF5C8A" stroke-width="40"/>
+  <circle cx="787.8" cy="296.5" r="56" fill="#070707"/>
+  <circle cx="787.8" cy="296.5" r="40" fill="#FF5C8A"/>
+  <g transform="translate(520 512) scale(1.16) translate(-520 -512)">
+    <!-- A rounded triangle = its inset triangle stroked with a round join (radius 88). -->
+    <polygon points="476,453.1 577.2,512 476,570.9" fill="#F4F2EE" stroke="#F4F2EE" stroke-width="176" stroke-linejoin="round"/>
+    <ellipse cx="474" cy="482" rx="25" ry="34" fill="#0E0E0F"/>
+    <ellipse cx="566" cy="482" rx="25" ry="34" fill="#0E0E0F"/>
+    <ellipse cx="483" cy="468" rx="8" ry="9" fill="#fff"/>
+    <ellipse cx="575" cy="468" rx="8" ry="9" fill="#fff"/>
+    <ellipse cx="440" cy="562" rx="35" ry="20" fill="#FF5C8A" fill-opacity=".85"/>
+    <ellipse cx="604" cy="562" rx="35" ry="20" fill="#FF5C8A" fill-opacity=".85"/>
+    <path d="M492 550Q520 586 548 550" fill="none" stroke="#0E0E0F" stroke-width="16" stroke-linecap="round"/>
+  </g>
+</svg>
