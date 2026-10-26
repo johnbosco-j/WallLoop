@@ -224,7 +224,7 @@ sign, notarize the DMG, and update the appcast.
    ```
 
 Options: `VERSION` and `BUILD` override the version, `SIGN_IDENTITY` picks a specific certificate,
-`SPARKLE_BIN` points at Sparkle's tools, and `SKIP_DMG_LAYOUT=1` skips arranging the DMG window
+`SPARKLE_BIN` points at Sparkle's tools, and `DMG_NAME` overrides the DMG file name. The DMG window is laid out by [dmgbuild](https://github.com/dmgbuild/dmgbuild) (installed into `build/tools` on first run), so no Finder permission is needed
 (which asks Finder through AppleScript).
 
 To check the build and DMG without an Apple Developer account, make an unsigned test DMG. Never

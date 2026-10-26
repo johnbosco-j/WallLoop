@@ -19,7 +19,7 @@
 #   SIGN_IDENTITY        Code signing identity (default: "Developer ID Application")
 #   SPARKLE_BIN          Folder containing Sparkle's generate_appcast (default: the SwiftPM
 #                        artifact under build/)
-#   SKIP_DMG_LAYOUT=1    Don't arrange the DMG window with Finder (no AppleScript; for CI)
+#   DMG_NAME             File name of the DMG (default: WallLoop-<version>.dmg)
 #   ADHOC=1              Skip signing, notarization and the appcast
 #
 # Output goes to dist/: the DMG, and dist/updates/ with every release DMG plus appcast.xml.
@@ -31,14 +31,12 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 ADHOC="${ADHOC:-0}"
-SKIP_DMG_LAYOUT="${SKIP_DMG_LAYOUT:-0}"
 SIGN_IDENTITY="${SIGN_IDENTITY:-Developer ID Application}"
 BUILD_DIR="$ROOT/build/release"
 DIST_DIR="$ROOT/dist"
 UPDATES_DIR="$DIST_DIR/updates"
 ARCHIVE="$BUILD_DIR/WallLoop.xcarchive"
 EXPORT_DIR="$BUILD_DIR/export"
-STAGE_DIR="$BUILD_DIR/dmg"
 
 log() { printf '\n\033[1;34m==>\033[0m \033[1m%s\033[0m\n' "$*"; }
 warn() { printf '\033[1;33mwarning:\033[0m %s\n' "$*" >&2; }
@@ -67,10 +65,15 @@ notarize() {
 
 need xcodebuild "Install Xcode from the App Store."
 need xcodegen "Install it with: brew install xcodegen"
-if ! command -v create-dmg >/dev/null 2>&1; then
-    need brew "Install Homebrew from https://brew.sh, then: brew install create-dmg"
-    log "Installing create-dmg"
-    brew install create-dmg
+need python3 "Install Python 3 (it ships with the Xcode command line tools)."
+
+# dmgbuild lays out the DMG window by writing Finder's .DS_Store directly, so it needs no
+# Finder automation permission and works in CI. It lives in its own venv under build/.
+DMGBUILD_VENV="$ROOT/build/tools/dmgbuild"
+if [[ ! -x "$DMGBUILD_VENV/bin/dmgbuild" ]]; then
+    log "Installing dmgbuild into build/tools"
+    python3 -m venv "$DMGBUILD_VENV"
+    "$DMGBUILD_VENV/bin/pip" install --quiet "dmgbuild>=1.6,<2"
 fi
 
 if [[ "$ADHOC" == 1 ]]; then
@@ -87,7 +90,7 @@ fi
 VERSION="${VERSION:-$(project_setting MARKETING_VERSION)}"
 BUILD="${BUILD:-$(project_setting CURRENT_PROJECT_VERSION)}"
 [[ -n "$VERSION" && -n "$BUILD" ]] || die "Couldn't read the version from project.yml."
-DMG_NAME="WallLoop-$VERSION$([[ "$ADHOC" == 1 ]] && echo "-adhoc").dmg"
+DMG_NAME="${DMG_NAME:-WallLoop-$VERSION$([[ "$ADHOC" == 1 ]] && echo "-adhoc").dmg}"
 DMG="$DIST_DIR/$DMG_NAME"
 
 log "Releasing WallLoop $VERSION ($BUILD)"
@@ -181,27 +184,12 @@ fi
 # --- DMG -------------------------------------------------------------------------------
 
 log "Building $DMG_NAME"
-rm -rf "$STAGE_DIR" "$DMG"
-mkdir -p "$STAGE_DIR"
-cp -R "$APP" "$STAGE_DIR/"
-
-dmg_args=(
-    --volname "WallLoop"
-    --window-pos 200 120
-    --window-size 600 380
-    --icon-size 128
-    --icon "WallLoop.app" 160 180
-    --hide-extension "WallLoop.app"
-    --app-drop-link 440 180
-    --no-internet-enable
-)
-if [[ -f "$APP/Contents/Resources/AppIcon.icns" ]]; then
-    dmg_args+=(--volicon "$APP/Contents/Resources/AppIcon.icns")
-fi
-if [[ "$SKIP_DMG_LAYOUT" == 1 ]]; then
-    dmg_args+=(--skip-jenkins)
-fi
-create-dmg "${dmg_args[@]}" "$DMG" "$STAGE_DIR"
+rm -f "$DMG"
+"$DMGBUILD_VENV/bin/dmgbuild" -s scripts/dmg/settings.py \
+    -D app="$APP" \
+    -D background="$ROOT/scripts/dmg/background.tiff" \
+    -D icon="$APP/Contents/Resources/AppIcon.icns" \
+    "WallLoop" "$DMG"
 
 if [[ "$ADHOC" != 1 ]]; then
     log "Signing and notarizing the DMG"
