@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>WallLoop — Live video wallpapers for your Mac · by Riven</title>
+  <meta name="description" content="WallLoop turns your own videos into a live wallpaper on every display. Muted, looping, hardware-decoded and quiet on battery. A free macOS menu bar app by Riven.">
+  <link rel="canonical" href="https://wallloop.rivendevs.in/">
+  <meta name="theme-color" content="#070707">
+  <meta name="color-scheme" content="dark">
+  <meta name="robots" content="index, follow">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="WallLoop — by Riven">
+  <meta property="og:url" content="https://wallloop.rivendevs.in/">
+  <meta property="og:title" content="WallLoop — Your videos, alive on your desktop">
+  <meta property="og:description" content="Live video wallpapers for macOS from your own videos. Free, private, light on battery. By Riven.">
+  <meta property="og:image" content="https://wallloop.rivendevs.in/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="WallLoop app icon, a smiling play button inside a rose orbit, next to the words WallLoop — Your videos, alive on your desktop.">
+  <meta property="og:locale" content="en_IN">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="WallLoop — Your videos, alive on your desktop">
+  <meta name="twitter:description" content="Live video wallpapers for macOS from your own videos. Free, private, light on battery. By Riven.">
+  <meta name="twitter:image" content="https://wallloop.rivendevs.in/assets/og.png">
+
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400..700&family=Instrument+Serif:ital@0;1&display=swap">
+  <link rel="stylesheet" href="styles.css">
+  <script src="main.js" defer></script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "WallLoop",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "macOS 14 or later",
+    "softwareVersion": "0.1.0",
+    "description": "Live video wallpapers for macOS from your own videos.",
+    "url": "https://wallloop.rivendevs.in/",
+    "image": "https://wallloop.rivendevs.in/assets/icon-512.png",
+    "downloadUrl": "https://github.com/johnbosco-j/WallLoop/releases/latest/download/WallLoop.dmg",
+    "license": "https://opensource.org/licenses/MIT",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR" },
+    "publisher": { "@type": "Organization", "name": "Riven", "url": "https://rivendevs.in" },
+    "creator": { "@type": "Person", "name": "Johnbosco J Elanjikal", "jobTitle": "Founder, Riven" }
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Line icons: 1.5px stroke, rounded caps (design.md §8) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19.5h14"/></symbol>
+      <symbol id="i-film" viewBox="0 0 24 24"><rect x="3" y="3.5" width="18" height="17" rx="2.5"/><path d="M7.5 3.5v17M16.5 3.5v17M3 12h18M3 7.75h4.5M3 16.25h4.5M16.5 7.75H21M16.5 16.25H21"/></symbol>
+      <symbol id="i-displays" viewBox="0 0 24 24"><rect x="2.5" y="4.5" width="12" height="9" rx="1.5"/><rect x="16" y="7.5" width="5.5" height="6" rx="1.2"/><path d="M6.5 18.5h5M8.5 13.5v5"/></symbol>
+      <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M3 7h3.5c3 0 4 10 7 10H21M3 17h3.5c1.3 0 2.1-1.3 2.9-3M13.6 10c.8-1.7 1.6-3 2.9-3H21M18 4l3 3-3 3M18 14l3 3-3 3"/></symbol>
+      <symbol id="i-battery" viewBox="0 0 24 24"><rect x="2.5" y="7" width="16.5" height="10" rx="2.2"/><path d="M21.5 10.5v3M6 10.5v3"/></symbol>
+      <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.2A4.2 4.2 0 0 1 12 7.2a4.2 4.2 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/></symbol>
+      <symbol id="i-command" viewBox="0 0 24 24"><path d="M9 6.5V17.5M15 6.5v11M6.5 9h11M6.5 15h11M9 9H6.5A2.5 2.5 0 1 1 9 6.5M15 9h2.5A2.5 2.5 0 1 0 15 6.5M9 15H6.5A2.5 2.5 0 1 0 9 17.5M15 15h2.5a2.5 2.5 0 1 1-2.5 2.5"/></symbol>
+      <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h3.8l2 2.2h7.2A2.5 2.5 0 0 1 21 9.7v7.8a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/></symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 19 6v5.6c0 4.4-3 7.6-7 9.4-4-1.8-7-5-7-9.4V6z"/><path d="m9 12 2 2 4-4"/></symbol>
+      <symbol id="i-laptop" viewBox="0 0 24 24"><rect x="4.5" y="5" width="15" height="10.5" rx="1.5"/><path d="M2.5 19h19"/></symbol>
+      <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M3.5 9a12.5 12.5 0 0 1 17 0M6.5 12.3a8 8 0 0 1 11 0M9.5 15.5a3.6 3.6 0 0 1 5 0"/><circle cx="12" cy="19" r=".6"/></symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7.5h16M4 12h16M4 16.5h16"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+      <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.6v.4"/></symbol>
+      <symbol id="i-prev" viewBox="0 0 24 24"><path d="M18 6v12l-8-6zM7 6v12"/></symbol>
+      <symbol id="i-next" viewBox="0 0 24 24"><path d="M6 6v12l8-6zM17 6v12"/></symbol>
+      <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></symbol>
+      <symbol id="i-status" viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M19 9.5v5M21.5 10.5v3"/><path d="M8.5 10v4l3-2z" fill="currentColor"/></symbol>
+      <symbol id="i-wifi-solid" viewBox="0 0 24 24"><path d="M3.5 9a12.5 12.5 0 0 1 17 0M6.5 12.3a8 8 0 0 1 11 0M9.5 15.5a3.6 3.6 0 0 1 5 0"/></symbol>
+    </defs>
+  </svg>
+
+  <div class="nav-wrap">
+    <nav class="nav" aria-label="Primary">
+      <span class="nav__progress" aria-hidden="true"></span>
+      <a class="nav__brand" href="#top" aria-label="WallLoop — back to top">
+        <img src="assets/favicon.svg" width="32" height="32" alt="">
+        <span class="wordmark" aria-hidden="true">WallLo<span class="o">o</span>p</span>
+      </a>
+      <ul class="nav__links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#privacy">Privacy</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+      <div class="nav__actions">
+        <a class="btn btn--primary nav__cta" href="#download" data-download>
+          <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Download
+        </a>
+        <button class="nav__menu" type="button" aria-expanded="false" aria-controls="menu-sheet" aria-label="Open menu">
+          <svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg>
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <div class="menu-sheet" id="menu-sheet" hidden>
+    <div class="menu-sheet__glow" aria-hidden="true"></div>
+    <ul>
+      <li style="--i:0"><a href="#features"><span>01</span>Features</a></li>
+      <li style="--i:1"><a href="#how"><span>02</span>How it works</a></li>
+      <li style="--i:2"><a href="#privacy"><span>03</span>Privacy</a></li>
+      <li style="--i:3"><a href="#faq"><span>04</span>FAQ</a></li>
+    </ul>
+    <div class="menu-sheet__foot">
+      <a class="btn btn--primary" href="#download" data-download>
+        <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Download for macOS
+      </a>
+      <p class="download-meta">v0.1.0 preview · macOS 14+ · Free</p>
+    </div>
+  </div>
+
+  <main id="main">
+    <!-- ── Hero ───────────────────────────────────────────────────── -->
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="hero__glow" aria-hidden="true"></div>
+      <div class="orbit" aria-hidden="true">
+        <div class="orbit__plane">
+          <div class="orbit__ring orbit__ring--1">
+            <svg viewBox="-104 -104 208 208">
+              <circle r="100" stroke-opacity=".55" stroke-width=".5"/>
+              <circle r="100" stroke-opacity="1" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="138 629"/>
+            </svg>
+          </div>
+          <div class="orbit__ring orbit__ring--2">
+            <svg viewBox="-104 -104 208 208">
+              <circle r="100" stroke-opacity=".48" stroke-width=".5"/>
+              <circle r="100" stroke-opacity="1" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="88 629"/>
+              <g transform="rotate(50) translate(100 0)">
+                <circle r="9" fill="#ff5c8a" stroke="none" opacity=".22"/>
+                <circle r="4.5" fill="#ff5c8a" stroke="none" opacity=".35"/>
+                <circle r="2.6" fill="#ff7ea2" stroke="none"/>
+              </g>
+            </svg>
+          </div>
+          <div class="orbit__ring orbit__ring--3">
+            <svg viewBox="-104 -104 208 208">
+              <circle r="100" stroke-opacity=".34" stroke-width=".5"/>
+              <circle r="100" stroke-opacity=".9" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="189 629"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="hero__scrim" aria-hidden="true"></div>
+
+      <div class="container hero__content">
+        <picture>
+          <source srcset="assets/icon-512.webp" type="image/webp">
+          <img class="hero__mark hero-in" src="assets/icon-512.png" width="144" height="144" alt="WallLoop app icon: Loopy, a smiling play button inside a rose orbit" fetchpriority="high">
+        </picture>
+        <div class="hero__chips hero-in" style="--i:1">
+          <span class="chip chip--accent">macOS app</span>
+          <span class="chip chip--neutral">v0.1.0 preview</span>
+        </div>
+        <h1 class="hero__title hero-in" id="hero-title" style="--i:2">Your videos, <em class="accent accent-flow">alive</em> on your desktop.</h1>
+        <p class="hero__sub hero-in" style="--i:3">WallLoop turns your own videos into a live wallpaper on every display: muted, looping, hardware-decoded, and quiet on battery. It lives in your menu bar.</p>
+        <div class="hero__actions hero-in" style="--i:4">
+          <a class="btn btn--primary" href="#download" data-download>
+            <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Download for macOS
+          </a>
+          <a class="btn btn--secondary" href="#how">How it works</a>
+        </div>
+        <p class="download-meta hero__meta hero-in" style="--i:4">v0.1.0 preview · macOS 14+ · Free</p>
+        <p class="micro hero__lockup hero-in" style="--i:5">WallLoop — by Riven</p>
+      </div>
+
+      <div class="scroll-cue" aria-hidden="true">
+        <span class="scroll-cue__line"></span>
+      </div>
+    </section>
+
+    <!-- ── The app ────────────────────────────────────────────────── -->
+    <section class="section divider" id="app" aria-labelledby="app-title">
+      <div class="container">
+        <header class="section-header">
+          <p class="micro reveal">The app</p>
+          <h2 class="h2 reveal" id="app-title" style="--i:1">Lives <em class="accent">quietly</em> in your menu bar.</h2>
+          <p class="lead reveal" style="--i:2">A menu bar icon for what&rsquo;s playing, a Settings window for your library, and your desktop doing the rest.</p>
+        </header>
+
+        <figure class="showcase reveal" style="--i:2">
+          <div class="device">
+            <div class="device__screen" data-parallax-inner>
+              <div class="mock" aria-hidden="true">
+                <div class="mock__wall">
+                  <div class="sky"></div><div class="sun"></div><div class="hills"></div><div class="sea"></div>
+                </div>
+
+                <div class="mock__menubar">
+                  <div class="left"><span class="dot"></span><b>Finder</b><span>File</span><span>Edit</span><span>View</span><span>Go</span></div>
+                  <div class="right">
+                    <span class="mock__status"><svg class="icon" style="stroke-width:1.8"><use href="#i-status"/></svg></span>
+                    <svg class="icon mock__glyph"><use href="#i-wifi-solid"/></svg>
+                    <svg class="icon mock__glyph"><use href="#i-battery"/></svg>
+                    <span>Sun 9:41</span>
+                  </div>
+                </div>
+
+                <div class="mock__window">
+                  <span class="mw__lights"><i></i><i></i><i></i></span>
+                  <div class="mw__side">
+                    <div class="mw__brand"><img src="assets/favicon.svg" alt="">WallLoop</div>
+                    <div class="mw__nav">
+                      <span class="is-active">Library</span><span>General</span><span>Shortcuts</span><span>About</span>
+                    </div>
+                  </div>
+                  <div class="mw__main">
+                    <div class="mw__head"><h4>Your <em>videos</em></h4><small>48 videos</small></div>
+                    <div class="mw__grid">
+                      <div class="tile is-playing"><div class="tile__img t1"><span class="tile__badge">Now playing</span></div><div class="tile__name">Ocean Dusk</div></div>
+                      <div class="tile"><div class="tile__img t2"><svg class="icon tile__heart" style="fill:currentColor"><use href="#i-heart"/></svg></div><div class="tile__name">Kelp Forest</div></div>
+                      <div class="tile"><div class="tile__img t3"></div><div class="tile__name">Snow Ridge</div></div>
+                      <div class="tile"><div class="tile__img t4"></div><div class="tile__name">Night Rain</div></div>
+                      <div class="tile"><div class="tile__img t5"><svg class="icon tile__heart" style="fill:currentColor"><use href="#i-heart"/></svg></div><div class="tile__name">Meadow</div></div>
+                      <div class="tile"><div class="tile__img t6"></div><div class="tile__name">Lantern Festival</div></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mock__menu">
+                  <div class="np">
+                    <div class="np__thumb t1"></div>
+                    <div class="np__title">Ocean Dusk</div>
+                    <div class="np__state">Now playing</div>
+                    <div class="np__controls">
+                      <span><svg class="icon"><use href="#i-prev"/></svg></span>
+                      <span class="is-main"><svg class="icon"><use href="#i-pause"/></svg></span>
+                      <span><svg class="icon"><use href="#i-next"/></svg></span>
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="mi is-hover"><span>Add to Favorites</span><small>♡</small></div>
+                  <div class="mi"><span>Favorites</span><small>›</small></div>
+                  <div class="mi"><span>Shuffle Favorites Only</span></div>
+                  <hr>
+                  <div class="mi"><span>Shuffle Every</span><small>1 Hour ›</small></div>
+                  <div class="mi"><span>Shuffle</span><span class="check">✓</span></div>
+                  <div class="mi"><span>In Order</span></div>
+                  <hr>
+                  <div class="mi"><span>Open Library…</span></div>
+                  <div class="mi"><span>Settings…</span><kbd>⌘,</kbd></div>
+                  <div class="mi"><span>Quit WallLoop</span><kbd>⌘Q</kbd></div>
+                </div>
+              </div>
+              <span class="sr-only">Illustration of WallLoop on a Mac: a dusk-over-water video plays as the wallpaper, the WallLoop menu shows Now Playing with previous, pause and next controls, and the Settings window shows the video library as a grid with the playing video highlighted.</span>
+            </div>
+          </div>
+          <figcaption class="showcase__caption">
+            <span class="micro">Illustration · menu bar and Settings › Library</span>
+            <span class="micro">Your videos, your desktop</span>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ── Features ───────────────────────────────────────────────── -->
+    <section class="section divider" id="features" aria-labelledby="features-title">
+      <div class="container">
+        <header class="section-header">
+          <p class="micro reveal">Features</p>
+          <h2 class="h2 reveal" id="features-title" style="--i:1">Everything a wallpaper <em class="accent">should</em> do.</h2>
+          <p class="lead reveal" style="--i:2">Small, calm and careful with your battery. Nothing bundled, nothing downloaded: WallLoop plays only the videos you give it.</p>
+        </header>
+
+        <ul class="features">
+          <li class="card card--hover feature reveal" style="--i:0">
+            <div class="feature__top"><span class="feature__index">01</span><svg class="icon" aria-hidden="true"><use href="#i-film"/></svg></div>
+            <h3>Your own videos</h3>
+            <p>MP4, MOV and M4V from Movies › WallLoop or any folder you choose. Add or delete files in Finder and the library updates within a second.</p>
+          </li>
+          <li class="card card--hover feature reveal" style="--i:1">
+            <div class="feature__top"><span class="feature__index">02</span><svg class="icon" aria-hidden="true"><use href="#i-displays"/></svg></div>
+            <h3>Every display</h3>
+            <p>The same video everywhere, or a different one on each screen. Fill, Fit or Stretch, and it follows displays as you plug them in.</p>
+          </li>
+          <li class="card card--hover feature reveal" style="--i:2">
+            <div class="feature__top"><span class="feature__index">03</span><svg class="icon" aria-hidden="true"><use href="#i-shuffle"/></svg></div>
+            <h3>Shuffle or in order</h3>
+            <p>Change every 5, 15 or 30 minutes, every 1 or 3 hours, daily or never. Shuffle plays every video once before any repeats.</p>
+          </li>
+          <li class="card card--hover feature reveal" style="--i:0">
+            <div class="feature__top"><span class="feature__index">04</span><svg class="icon" aria-hidden="true"><use href="#i-battery"/></svg></div>
+            <h3>Pauses itself</h3>
+            <p>On battery, in Low Power Mode, behind full-screen apps, and whenever the Mac is locked or asleep. The menu tells you why, and it resumes where it left off.</p>
+          </li>
+          <li class="card card--hover feature reveal" style="--i:1">
+            <div class="feature__top"><span class="feature__index">05</span><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></div>
+            <h3>Favorites</h3>
+            <p>Heart the videos you love, play them straight from the menu, or shuffle favorites only.</p>
+          </li>
+          <li class="card card--hover feature reveal" style="--i:2">
+            <div class="feature__top"><span class="feature__index">06</span><svg class="icon" aria-hidden="true"><use href="#i-command"/></svg></div>
+            <h3>Shortcuts &amp; drop to add</h3>
+            <p><kbd>⌃⌥⌘→</kbd> next, <kbd>⌃⌥⌘←</kbd> previous, <kbd>⌃⌥⌘P</kbd> pause, from any app. Drop videos on the menu bar icon to add and play them.</p>
+          </li>
+        </ul>
+
+        <div class="also reveal">
+          <span class="micro">Also</span>
+          <span class="chip chip--neutral">Hardware decoding only</span>
+          <span class="chip chip--neutral">HEVC with alpha</span>
+          <span class="chip chip--neutral">Open at Login</span>
+          <span class="chip chip--neutral">Sandboxed</span>
+          <span class="chip chip--neutral">Liquid Glass on macOS 26</span>
+          <span class="chip chip--neutral">Universal: Apple silicon &amp; Intel</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── How it works ───────────────────────────────────────────── -->
+    <section class="section divider" id="how" aria-labelledby="how-title">
+      <div class="container">
+        <header class="section-header">
+          <p class="micro reveal">How it works</p>
+          <h2 class="h2 reveal" id="how-title" style="--i:1">Three steps to a <em class="accent">living</em> desktop.</h2>
+        </header>
+        <div class="steps-wrap">
+        <span class="steps__line" aria-hidden="true"></span>
+        <ol class="steps">
+          <li class="step reveal" style="--i:0">
+            <span class="step__num" aria-hidden="true">01</span>
+            <h3>Download</h3>
+            <p>Open the DMG and drag WallLoop to Applications. It lives in the menu bar, not the Dock.</p>
+          </li>
+          <li class="step reveal" style="--i:1">
+            <span class="step__num" aria-hidden="true">02</span>
+            <h3>Add your videos</h3>
+            <p>Put them in Movies › WallLoop, drop them on the menu bar icon, or choose any folder in Settings › Library.</p>
+          </li>
+          <li class="step reveal" style="--i:2">
+            <span class="step__num" aria-hidden="true">03</span>
+            <h3>Set the mood</h3>
+            <p>Pick how often it changes, which display gets which video, and how it fits. Then forget it&rsquo;s there.</p>
+          </li>
+        </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Energy & privacy ───────────────────────────────────────── -->
+    <section class="section divider" id="privacy" aria-labelledby="privacy-title">
+      <div class="container">
+        <header class="section-header">
+          <p class="micro reveal">Energy &amp; privacy</p>
+          <h2 class="h2 reveal" id="privacy-title" style="--i:1">Light on battery. <em class="accent">Private</em> by design.</h2>
+        </header>
+
+        <dl class="stats">
+          <div class="reveal" style="--i:0">
+            <dt class="sr-only">CPU while playing one H.264 video on one display</dt>
+            <dd class="stat__value is-accent">~1.8%</dd>
+            <dd class="stat__label" aria-hidden="true">CPU while playing one H.264 video on one display</dd>
+          </div>
+          <div class="reveal" style="--i:1">
+            <dt class="sr-only">CPU while paused, for any reason</dt>
+            <dd class="stat__value">~0%</dd>
+            <dd class="stat__label" aria-hidden="true">CPU while paused, for any reason</dd>
+          </div>
+          <div class="reveal" style="--i:2">
+            <dt class="sr-only">Trackers, accounts or analytics</dt>
+            <dd class="stat__value">0</dd>
+            <dd class="stat__label" aria-hidden="true">Trackers, accounts or analytics</dd>
+          </div>
+        </dl>
+        <p class="source">Measured with Activity Monitor and <code>top</code> on an Apple silicon MacBook, one 1710 × 1112 display, H.264 video. Your numbers will vary with codec, resolution and how many displays you use.</p>
+
+        <ul class="privacy">
+          <li class="card reveal" style="--i:0">
+            <svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg>
+            <h3>Reads only what you choose</h3>
+            <p>WallLoop is sandboxed. It reads Movies › WallLoop and the folders you pick, with read-only access, and nothing else.</p>
+          </li>
+          <li class="card reveal" style="--i:1">
+            <svg class="icon" aria-hidden="true"><use href="#i-laptop"/></svg>
+            <h3>Stays on your Mac</h3>
+            <p>Your videos, settings and thumbnails never leave your Mac. No analytics, no accounts, no ads.</p>
+          </li>
+          <li class="card reveal" style="--i:2">
+            <svg class="icon" aria-hidden="true"><use href="#i-wifi"/></svg>
+            <h3>One optional request</h3>
+            <p>The only network access is the update check, and you can turn it off. It&rsquo;s already off in this preview build.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ── Honest note: lock screen ───────────────────────────────── -->
+    <section class="section divider" id="lock-screen" aria-labelledby="lock-title">
+      <div class="container">
+        <div class="card note reveal">
+          <div class="note__visual" aria-hidden="true">
+            <div class="t1"></div>
+            <div class="note__date">Sunday 26 October</div>
+            <div class="note__clock">9:41</div>
+            <div class="note__lock"><svg class="icon"><use href="#i-lock"/></svg></div>
+          </div>
+          <div>
+            <p class="micro">An honest note</p>
+            <h3 class="h3" id="lock-title">The lock screen shows a still frame.</h3>
+            <p>macOS doesn&rsquo;t give apps a public way to play video on the lock screen. So each time the wallpaper changes, WallLoop sets a still frame from the current video as your desktop picture. The lock screen shows that same scene, and the desktop comes alive again the moment you unlock.</p>
+            <a class="link" href="https://github.com/johnbosco-j/WallLoop/blob/main/docs/lock-screen-research.md" target="_blank" rel="noopener noreferrer">Read the research <span aria-hidden="true">↗</span><span class="sr-only">(opens in a new tab)</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Requirements ───────────────────────────────────────────── -->
+    <section class="section divider" id="requirements" aria-labelledby="req-title">
+      <div class="container">
+        <header class="section-header">
+          <p class="micro reveal">Requirements</p>
+          <h2 class="h2 reveal" id="req-title" style="--i:1">What it <em class="accent">needs</em>.</h2>
+        </header>
+        <dl class="specs">
+          <div class="spec reveal"><dt>macOS</dt><dd>14 Sonoma or later</dd></div>
+          <div class="spec reveal" style="--i:1"><dt>Mac</dt><dd>Apple silicon or Intel (universal)</dd></div>
+          <div class="spec reveal" style="--i:2"><dt>Download</dt><dd>About 3 MB</dd></div>
+          <div class="spec reveal"><dt>Videos</dt><dd>MP4, MOV, M4V · H.264, HEVC</dd></div>
+          <div class="spec reveal" style="--i:1"><dt>Price</dt><dd>Free · MIT license</dd></div>
+          <div class="spec reveal" style="--i:2"><dt>Version</dt><dd>0.1.0 preview</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- ── FAQ ────────────────────────────────────────────────────── -->
+    <section class="section divider" id="faq" aria-labelledby="faq-title">
+      <div class="container">
+        <header class="section-header">
+          <p class="micro reveal">FAQ</p>
+          <h2 class="h2 reveal" id="faq-title" style="--i:1">Good <em class="accent">questions</em>.</h2>
+        </header>
+        <div class="faq">
+          <details>
+            <summary>macOS says it can&rsquo;t verify the developer. Is that expected?<svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <div class="answer">
+              <p>Yes, for now. This preview isn&rsquo;t notarized by Apple yet, so macOS blocks the first launch.</p>
+              <p>Open <strong>System Settings › Privacy &amp; Security</strong>, scroll to <strong>Security</strong>, and click <strong>Open Anyway</strong> next to WallLoop, then confirm. You only need to do this once. Signed, notarized builds are coming.</p>
+            </div>
+          </details>
+          <details>
+            <summary>Where do my videos go?<svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <div class="answer">
+              <p>Nowhere. WallLoop plays them where they are and only reads the folders you choose. Videos you drop on the menu bar icon are copied into <strong>Movies › WallLoop</strong>; removing a folder from the library never deletes anything.</p>
+            </div>
+          </details>
+          <details>
+            <summary>Which video formats work?<svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <div class="answer">
+              <p>MP4, MOV and M4V that your Mac can decode in hardware: H.264 and HEVC everywhere, including HEVC with transparency. Videos that would need software decoding (for example AV1 on older Macs) are listed under &ldquo;Can&rsquo;t Play&rdquo; with the reason instead of draining your battery.</p>
+            </div>
+          </details>
+          <details>
+            <summary>Will it drain my battery?<svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <div class="answer">
+              <p>WallLoop uses the Mac&rsquo;s media engine, never keeps your display awake, and by default pauses on battery, in Low Power Mode and when full-screen apps cover the desktop. It always pauses while the Mac is locked or asleep. You can change each rule in Settings › General.</p>
+            </div>
+          </details>
+          <details>
+            <summary>Does it change my lock screen?<svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <div class="answer">
+              <p>It sets a still frame of the current video as your desktop picture, so the lock screen matches. The lock screen itself doesn&rsquo;t play video, because macOS has no public way for apps to do that.</p>
+            </div>
+          </details>
+          <details>
+            <summary>How do I uninstall it?<svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <div class="answer">
+              <p>Choose <strong>Quit WallLoop</strong> from its menu bar icon, turn off Open at Login in Settings › General if you turned it on, then drag WallLoop from Applications to the Trash.</p>
+              <p>To remove its settings and thumbnails too, delete <code>~/Library/Containers/com.johnbosco.wallloop</code>. Your videos stay where they are.</p>
+            </div>
+          </details>
+          <details>
+            <summary>Is it really free?<svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+            <div class="answer">
+              <p>Yes. WallLoop is free and open source under the MIT license, with no ads, accounts or in-app purchases.</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Download ───────────────────────────────────────────────── -->
+    <section class="section" id="download" aria-labelledby="download-title">
+      <div class="container">
+        <div class="card download reveal">
+          <div class="download__glow" aria-hidden="true"></div>
+          <div class="download__ring" aria-hidden="true"></div>
+          <picture>
+            <source srcset="assets/icon-512.webp" type="image/webp">
+            <img src="assets/icon-512.png" width="104" height="104" alt="" loading="lazy">
+          </picture>
+          <h2 class="h2" id="download-title">Make your desktop <em class="accent">move</em>.</h2>
+          <p class="lead">Free for macOS 14 and later. Universal, about 3 MB.</p>
+          <div class="download__actions">
+            <a class="btn btn--primary" href="#download" data-download>
+              <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Download for macOS
+            </a>
+            <a class="btn btn--secondary" href="https://github.com/johnbosco-j/WallLoop" target="_blank" rel="noopener noreferrer">
+              Source on GitHub <span class="ext" aria-hidden="true">↗</span><span class="sr-only">(opens in a new tab)</span>
+            </a>
+          </div>
+          <p class="download-meta">v0.1.0 preview · macOS 14+ · Free</p>
+          <div class="first-launch">
+            <svg class="icon" aria-hidden="true"><use href="#i-info"/></svg>
+            <p><strong>First launch.</strong> This preview isn&rsquo;t notarized yet, so macOS will say it can&rsquo;t verify the developer. Open System Settings › Privacy &amp; Security and click <strong>Open Anyway</strong>. You only do this once; signed builds are coming.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer divider">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <a class="footer__lockup" href="#top" aria-label="WallLoop — by Riven, back to top">
+            <img src="assets/favicon.svg" width="40" height="40" alt="">
+            <span class="wordmark" aria-hidden="true">WallLo<span class="o">o</span>p</span>
+            <span class="footer__by" aria-hidden="true">— by Riven</span>
+          </a>
+          <p class="footer__lead">Live video wallpapers for your Mac, made from your own videos. Free, private and open source.</p>
+        </div>
+        <nav class="footer__cols" aria-label="Footer">
+          <div>
+            <h2 class="micro">Product</h2>
+            <ul>
+              <li><a href="#features">Features</a></li>
+              <li><a href="#how">How it works</a></li>
+              <li><a href="#privacy">Privacy</a></li>
+              <li><a href="#faq">FAQ</a></li>
+            </ul>
+          </div>
+          <div>
+            <h2 class="micro">Get it</h2>
+            <ul>
+              <li><a href="#download" data-download>Download for macOS</a></li>
+              <li><a href="https://github.com/johnbosco-j/WallLoop/releases" target="_blank" rel="noopener noreferrer">Release notes&nbsp;<span aria-hidden="true">↗</span><span class="sr-only">(opens in a new tab)</span></a></li>
+              <li><a href="https://github.com/johnbosco-j/WallLoop" target="_blank" rel="noopener noreferrer">GitHub&nbsp;<span aria-hidden="true">↗</span><span class="sr-only">(opens in a new tab)</span></a></li>
+            </ul>
+          </div>
+          <div>
+            <h2 class="micro">Riven</h2>
+            <ul>
+              <li><a href="https://rivendevs.in" target="_blank" rel="noopener noreferrer">rivendevs.in&nbsp;<span aria-hidden="true">↗</span><span class="sr-only">(opens in a new tab)</span></a></li>
+              <li><a href="https://rivendevs.in/#products" target="_blank" rel="noopener noreferrer">More from Riven&nbsp;<span aria-hidden="true">↗</span><span class="sr-only">(opens in a new tab)</span></a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+      <div class="footer__legal divider">
+        <p>© 2026 Riven · Chennai, India</p>
+        <p>Carved by Johnbosco J Elanjikal, founder of Riven</p>
+        <p>Built by RivenDevs · <a href="https://github.com/johnbosco-j/WallLoop/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License&nbsp;<span aria-hidden="true">↗</span><span class="sr-only">(opens in a new tab)</span></a></p>
+      </div>
+    </div>
+    <p class="footer__giant" aria-hidden="true">WallLoop</p>
+  </footer>
+
+  <div class="grain" aria-hidden="true"></div>
+</body>
+</html>
