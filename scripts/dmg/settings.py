@@ -14,7 +14,6 @@ filesystem = "HFS+"
 
 files = [app]
 symlinks = {"Applications": "/Applications"}
-hide_extensions = [app_name]
 
 icon = defines.get("icon")  # noqa: F821
 background = defines["background"]  # noqa: F821
