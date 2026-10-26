@@ -269,11 +269,12 @@ To replace the artwork by hand, open `Sources/Resources/AppIcon.icon` in Icon Co
 
 ## Website
 
-`site/` is WallLoop's product page: plain HTML, CSS and a little JavaScript, no build step. Its
+`site/` is WallLoop's product page, live at **https://wallloop.vercel.app**: plain HTML, CSS and a
+little JavaScript, no build step. Its
 Download buttons point at `releases/latest/download/WallLoop.dmg`, so every release must attach a
 file named exactly `WallLoop.dmg`, and the repository must be public for visitors to download it.
-Deploy it as its own Vercel project with Root Directory `site`, on `wallloop.rivendevs.in`; the Riven
-site's `/wallloop` short link redirects there. Details in [`site/README.md`](site/README.md).
+It's the Vercel project `wallloop` (Root Directory `site`), which redeploys when `site/` changes;
+the Riven site's `/wallloop` short link redirects there. Details in [`site/README.md`](site/README.md).
 
 ## Labs: live video on the lock screen
 

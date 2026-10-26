@@ -1,8 +1,8 @@
 # WallLoop website
 
-The product page for WallLoop at **wallloop.rivendevs.in**. The Riven site links to it through its
-short link `rivendevs.in/wallloop`, which redirects here, the same way `rivendevs.in/clareo` reaches
-Clareo.
+The product page for WallLoop, live at **https://wallloop.vercel.app** (and at `wallloop.rivendevs.in`
+once that domain is connected). The Riven site links to it through its short link `/wallloop`, which
+redirects here, the same way `/clareo` reaches Clareo.
 
 It follows Riven's design system (`rivendevs-site/design.md` and `skills.md`): Riven's dark neutrals,
 Instrument Sans with one Instrument Serif italic word per heading, DM Mono labels, the 1240 px grid,
@@ -49,12 +49,18 @@ parallax; everything still readable), and tab through it with the keyboard.
 
 ## Deploy on Vercel
 
-1. Import the WallLoop repository in Vercel as a new project.
-2. Set **Root Directory** to `site` and **Framework Preset** to **Other**. Leave the build command
-   empty; the output directory is the root directory itself.
-3. Deploy, then under **Settings › Domains** add `wallloop.rivendevs.in`.
-4. At the domain registrar, add a `CNAME` record for `wallloop` with the value Vercel shows
+It's deployed as the Vercel project **`wallloop`** (team `johnbosco-06s-projects`), linked to this
+repository with **Root Directory** `site`, no framework and no build command. Every push to `main`
+that changes `site/` deploys to production automatically; the project's Ignored Build Step
+(`git diff --quiet HEAD^ HEAD -- .`) skips pushes that only touch the app.
+
+To use the Riven domain later:
+
+1. In the `wallloop` project, under **Settings › Domains**, add `wallloop.rivendevs.in`.
+2. At the domain registrar, add a `CNAME` record for `wallloop` with the value Vercel shows
    (usually `cname.vercel-dns.com`).
+3. In the `rivendevs-site` project, change `NEXT_PUBLIC_WALLLOOP_URL` to
+   `https://wallloop.rivendevs.in` and redeploy it.
 
 Any static host works the same way: serve the contents of `site/` at the domain root.
 
@@ -62,8 +68,9 @@ Any static host works the same way: serve the contents of `site/` at the domain 
 
 In `rivendevs-site`, `next.config.ts` redirects `/wallloop` to `WALLLOOP_URL`
 (default `https://wallloop.<site domain>`, override with `NEXT_PUBLIC_WALLLOOP_URL`), and
-`content/products.ts` lists WallLoop with `href: "/wallloop"`. If the page moves, change the
-environment variable in Vercel and redeploy the Riven site; nothing here changes.
+`content/products.ts` lists WallLoop with `href: "/wallloop"`. Today `NEXT_PUBLIC_WALLLOOP_URL` is set
+to `https://wallloop.vercel.app` in the `rivendevs-site` Vercel project. If the page moves, change
+that variable and redeploy the Riven site; nothing here changes.
 
 ## Regenerate the images
 
