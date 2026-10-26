@@ -17,8 +17,8 @@ enum SettingsPane: String, CaseIterable, Identifiable {
 
     var symbol: String {
         switch self {
-        case .library: "film.stack"
-        case .general: "gearshape"
+        case .library: "square.grid.2x2"
+        case .general: "slider.horizontal.3"
         case .shortcuts: "command"
         case .about: "info.circle"
         }
@@ -40,9 +40,9 @@ final class SettingsNavigation {
     }
 }
 
-/// Hosts the SwiftUI settings in a plain NSWindow. A SwiftUI `Settings` scene is
-/// hard to open reliably from an NSMenu in an accessory app, and owning the
-/// window lets it look like a regular Mac app window.
+/// Hosts the SwiftUI settings in a plain NSWindow: always dark, with a transparent,
+/// integrated title bar over Riven's studio background. A SwiftUI `Settings` scene is
+/// hard to open reliably from an NSMenu in an accessory app.
 @MainActor
 final class SettingsWindowController {
     private let model: AppModel
@@ -63,16 +63,21 @@ final class SettingsWindowController {
 
     private func makeWindow() -> NSWindow {
         let host = NSHostingController(rootView: SettingsView(model: model, navigation: navigation))
-        host.sceneBridgingOptions = [.toolbars, .title]
+        host.sceneBridgingOptions = []
         host.sizingOptions = [.minSize]
 
         let window = NSWindow(contentViewController: host)
         window.styleMask = [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView]
-        window.toolbarStyle = .unified
+        window.title = "WallLoop"
+        window.titleVisibility = .hidden
+        window.titlebarAppearsTransparent = true
+        window.isMovableByWindowBackground = true
+        window.appearance = NSAppearance(named: .darkAqua)
+        window.backgroundColor = NSColor(Theme.bg)
         window.isReleasedWhenClosed = false
-        window.setContentSize(NSSize(width: 920, height: 640))
+        window.setContentSize(NSSize(width: 1080, height: 720))
         window.center()
-        window.setFrameAutosaveName("SettingsWindow")
+        window.setFrameAutosaveName("RivenSettingsWindow")
         return window
     }
 }

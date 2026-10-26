@@ -22,6 +22,8 @@ enum Theme {
     static let faint = Color(hex: 0x6E6C6B)
     static let success = Color(hex: 0x3DDC97)
     static let danger = Color(hex: 0xFF4D4D)
+    /// Warnings, such as a folder WallLoop lost access to (Riven's Tailwind `amber`).
+    static let amber = Color(hex: 0xFFB02E)
 
     /// WallLoop rose. Black text on it is 7.1:1; on `bg` it's 6.9:1.
     static let accent = Color(hex: 0xFF5C8A)

@@ -69,15 +69,12 @@ final class MenuBarController: NSObject, NSMenuDelegate {
             menu.addItem(makeItem("Add Folder…", #selector(addFolder), symbol: "folder.badge.plus"))
             return
         }
-        let status = if let reason = model.pauseReason {
-            "Paused — \(reason.title)"
-        } else {
-            model.isPaused ? "Paused" : "Now Playing"
-        }
         menu.addItem(.nowPlaying(NowPlayingView(
             videos: model.nowPlaying,
-            status: status,
             isPaused: model.isPaused || model.pauseReason != nil,
+            pauseReason: model.pauseReason?.title,
+            meta: NowPlayingView.meta(interval: settings.shuffleInterval, order: settings.playbackOrder,
+                                      otherDisplays: max(0, model.nowPlaying.count - 1)),
             library: library,
             initialThumbnail: thumbnail?.video == video ? thumbnail?.image : nil)))
     }
@@ -165,10 +162,12 @@ final class MenuBarController: NSObject, NSMenuDelegate {
 
     private func updateIcon() {
         let isPaused = model.isPaused || model.pauseReason != nil
-        let symbol = feedbackSymbol ?? (isPaused ? "pause.rectangle" : "play.rectangle.on.rectangle")
-        let description = isPaused ? "WallLoop, paused" : "WallLoop"
-        statusItem.button?.image = NSImage(systemSymbolName: symbol, accessibilityDescription: description)
-            ?? NSImage(systemSymbolName: "play.rectangle.on.rectangle", accessibilityDescription: description)
+        if let feedbackSymbol,
+           let image = NSImage(systemSymbolName: feedbackSymbol, accessibilityDescription: "WallLoop") {
+            statusItem.button?.image = image
+        } else {
+            statusItem.button?.image = StatusIcon.image(paused: isPaused)
+        }
     }
 
     /// Swaps the icon for `symbol` for a moment, as feedback for a drop.
