@@ -1,15 +1,20 @@
+<p align="center"><img src="site/assets/icon-512.png" width="128" alt="WallLoop app icon: Loopy, a smiling play button inside a rose orbit ring"></p>
+
 # WallLoop
 
 Live video wallpapers for macOS, made from your own videos.
+
+**WallLoop — by Riven.** Carved by Johnbosco J Elanjikal, founder of Riven. Built by RivenDevs.
 
 Put videos in a folder, give WallLoop access to it, and your desktop plays them on a loop,
 muted and hardware-decoded, one window per display. WallLoop lives in the menu bar, and it's free
 and open source.
 
-> **Status:** feature-complete for 0.1.0, not yet released. The first signed, notarized DMG will be
-> posted on our community site.
+> **Status:** 0.1.0 preview. The preview DMG on [GitHub Releases](https://github.com/johnbosco-j/WallLoop/releases)
+> isn't notarized yet (see [Install](#install)); signed, notarized builds follow once the Developer ID
+> is set up. Product page: [`site/`](site/), reached from `rivendevs.in/wallloop`.
 
-<!-- Screenshots: add these files when the UI is final, then remove this comment.
+<!-- Screenshots: add these files, then remove this comment.
 ![The WallLoop menu](docs/screenshots/menu.png)
 ![The Library in Settings](docs/screenshots/library.png)
 ![General settings](docs/screenshots/general.png)
@@ -59,18 +64,30 @@ and open source.
 
 ## Install
 
-1. Download the latest `WallLoop-x.y.z.dmg` from the WallLoop page on our community site.
+1. Download `WallLoop.dmg` from the WallLoop page (`rivendevs.in/wallloop`) or
+   [GitHub Releases](https://github.com/johnbosco-j/WallLoop/releases/latest).
 2. Open the DMG and drag **WallLoop** onto **Applications**.
 3. Open WallLoop from Applications. It has no Dock icon: look for its icon in the menu bar.
 4. Add your videos. Put them in **Movies › WallLoop** (WallLoop creates the folder on first launch),
    or choose another folder in **Settings › Library**. WallLoop can only read the folders you
    choose.
 
-WallLoop is signed with a Developer ID and notarized by Apple, so it opens without Gatekeeper
-warnings. If macOS says it can't check the app, you downloaded an unsigned test build: get the
-release DMG instead.
+**Preview builds aren't notarized yet**, so the first time you open WallLoop macOS says it can't
+verify the developer. Click **Done**, then open **System Settings › Privacy & Security**, scroll down
+and click **Open Anyway** next to WallLoop, and confirm. You only do this once. Signed, notarized
+releases open without this step.
 
 Requires macOS 14 Sonoma or later. On macOS 26 and later, WallLoop uses Liquid Glass.
+
+## Design
+
+WallLoop follows Riven's design system (`rivendevs-site/design.md`): Riven's dark neutrals,
+Instrument Sans with Instrument Serif italic accent words, DM Mono labels, its spacing, radii and
+motion, and the orbit motif. Like every Riven product it keeps its own accent colour, WallLoop
+rose `#FF5C8A`, used sparingly with black text on it. The tokens live in
+[`Sources/Design/Theme.swift`](Sources/Design/Theme.swift) and the logo in
+[`Sources/Design/BrandMark.swift`](Sources/Design/BrandMark.swift); the website mirrors them in
+[`site/styles.css`](site/styles.css).
 
 ## Privacy
 
@@ -155,10 +172,11 @@ CODE_SIGN_IDENTITY = Apple Development
 | `Sources/MenuBar` | `MenuBarController`: the status item and its menu |
 | `Sources/SettingsWindow` | SwiftUI Settings window (Library, General, About) |
 | `Sources/Updates` | `Updater`: Sparkle auto-updates |
-| `Sources/Design` | Liquid Glass helpers, with fallbacks for macOS 14–15 |
+| `Sources/Design` | Riven theme tokens, components, the Loopy logo, Liquid Glass helpers |
 | `Sources/Resources` | Asset catalog and app icon |
 | `Tests/` | Unit tests (Swift Testing) |
-| `scripts/` | `release.sh`, and the placeholder icon generator |
+| `scripts/` | `release.sh`, `render-brand.sh` (icon layers, DMG background), `dmg/` (DMG layout) |
+| `site/` | The WallLoop product page (static; see [`site/README.md`](site/README.md)) |
 
 The app is sandboxed with Hardened Runtime. Its entitlements allow reading folders you choose,
 remembering them, the Movies folder, outgoing network connections (Sparkle only), and Sparkle's
@@ -233,32 +251,29 @@ upload it:
 ADHOC=1 scripts/release.sh
 ```
 
-### App icon
+### App icon and DMG artwork
 
-`Sources/Resources/Assets.xcassets/AppIcon.appiconset` holds a placeholder made by
-`scripts/make-placeholder-icon.swift`. To replace it, design a 1024 × 1024 px master and export
-these PNGs over the existing files, keeping the names:
+The icon is drawn in code, in `Sources/Design/BrandMark.swift`: Loopy, a smiling play button, inside
+a rose orbit ring on Riven's dark surface. `scripts/render-brand.sh` renders it into the layers of
+`Sources/Resources/AppIcon.icon`, an Icon Composer document that macOS 26+ shows with Liquid Glass.
+Xcode renders the `.icns` for macOS 14–15 from the same file, glass shading included, so there is no
+separate PNG icon set. The script also renders the DMG background (`scripts/dmg/background.tiff`).
+Run it again after changing the logo:
 
-| File | Size (px) |
-| --- | --- |
-| `icon_16x16.png` | 16 × 16 |
-| `icon_16x16@2x.png` | 32 × 32 |
-| `icon_32x32.png` | 32 × 32 |
-| `icon_32x32@2x.png` | 64 × 64 |
-| `icon_128x128.png` | 128 × 128 |
-| `icon_128x128@2x.png` | 256 × 256 |
-| `icon_256x256.png` | 256 × 256 |
-| `icon_256x256@2x.png` | 512 × 512 |
-| `icon_512x512.png` | 512 × 512 |
-| `icon_512x512@2x.png` | 1024 × 1024 |
+```bash
+scripts/render-brand.sh
+```
 
-Follow the macOS icon grid: the artwork sits in an 824 × 824 px rounded square centred on the
-1024 px canvas, with transparent margins.
+To replace the artwork by hand, open `Sources/Resources/AppIcon.icon` in Icon Composer
+(Xcode › Open Developer Tool). Layers are 1024 × 1024 px PNGs on the macOS icon grid.
 
-For Liquid Glass on macOS 26 and later, you can also make a layered icon in Apple's Icon Composer.
-Save it as `Sources/Resources/WallLoop.icon`, then set `ASSETCATALOG_COMPILER_APPICON_NAME: WallLoop`
-in `project.yml` and run `xcodegen generate`. macOS 26 uses the `.icon`. Keep the PNG set so
-macOS 14 and 15 still have an icon.
+## Website
+
+`site/` is WallLoop's product page: plain HTML, CSS and a little JavaScript, no build step. Its
+Download buttons point at `releases/latest/download/WallLoop.dmg`, so every release must attach a
+file named exactly `WallLoop.dmg`, and the repository must be public for visitors to download it.
+Deploy it as its own Vercel project with Root Directory `site`, on `wallloop.rivendevs.in`; the Riven
+site's `/wallloop` short link redirects there. Details in [`site/README.md`](site/README.md).
 
 ## Labs: live video on the lock screen
 
@@ -270,8 +285,7 @@ A *moving* lock screen would need macOS's wallpaper extension point (`com.apple.
 built on Apple's private `WallpaperExtensionKit` framework and an undocumented protocol between
 the extension and macOS's wallpaper agent, with no public headers or documentation. Using it means
 reverse engineering that protocol, could break in any macOS update, and could leave the lock screen
-black if something went wrong. WallLoop
-doesn't do that. The full research and a checklist for re-checking each macOS release are in
+black if something went wrong. WallLoop doesn't do that. The full research and a checklist for re-checking each macOS release are in
 [docs/lock-screen-research.md](docs/lock-screen-research.md). If Apple publishes a real API, WallLoop
 will add it as an opt-in Labs feature.
 
@@ -287,7 +301,12 @@ before you use a video.
 
 - [Sparkle](https://sparkle-project.org) for updates (MIT).
 - [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) by Sindre Sorhus (MIT).
+- [Instrument Sans](https://fonts.google.com/specimen/Instrument+Sans),
+  [Instrument Serif](https://fonts.google.com/specimen/Instrument+Serif) and
+  [DM Mono](https://fonts.google.com/specimen/DM+Mono), under the SIL Open Font License (bundled
+  with their licence files in `Sources/Resources/Fonts`).
+- [dmgbuild](https://github.com/dmgbuild/dmgbuild) lays out the DMG (MIT; a build tool, not shipped).
 
 ## License
 
-WallLoop is released under the [MIT License](LICENSE).
+WallLoop is released under the [MIT License](LICENSE). © 2026 Riven · Chennai, India.

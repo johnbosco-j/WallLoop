@@ -6,7 +6,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.1.0-preview.1] - 2026-10-26
+
+First preview, published on GitHub Releases. Not notarized yet.
+
 ### Added
+
+- WallLoop is now a Riven product: the app follows Riven's design system (dark neutrals,
+  Instrument Sans / Instrument Serif / DM Mono, Riven spacing, radii and motion) with WallLoop rose
+  as its own accent. Credits: "WallLoop — by Riven", carved by Johnbosco J Elanjikal, founder of
+  Riven; built by RivenDevs.
+- New logo and app icon: Loopy, a smiling play button in a rose orbit ring, as a Liquid Glass
+  Icon Composer icon (Xcode renders the macOS 14–15 icon from it).
+- Restyled Settings window (Now Playing hero, library cards, first-run onboarding, About as a
+  product page) and menu bar card, with a custom template status icon.
+- Product website in `site/` with a Download for macOS button; the Riven site links to it at
+  `/wallloop`.
+- Riven-styled DMG window, built with dmgbuild (no Finder permission needed).
+- Thumbnails and lock screen stills use a representative frame instead of the first second, which
+  is often black.
 
 - Direct distribution: Developer ID signing, notarization and a DMG built by `scripts/release.sh`.
 - Automatic updates with Sparkle 2: "Check for Updates…" in the menu bar and About, plus an
